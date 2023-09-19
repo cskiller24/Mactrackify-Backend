@@ -3,7 +3,8 @@
 @section('body')
 <div class="page">
 <!-- Sidebar -->
-@include('team-leader.components.nav')
+@include('components.test-nav')
+
     <div class="page-wrapper">
         <!-- Page header -->
         <div class="page-header d-print-none">

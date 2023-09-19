@@ -8,7 +8,7 @@
 
     <div class="col-6 d-flex justify-content-end align-items-center">
         <div class="fs-3 mx-3">
-            Total Data: 10000
+            Total Data: {{ $totalSales ?? 0 }}
         </div>
         <a href="" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#ba-create-modal">
             <i class="ti ti-plus icon"></i>
@@ -36,25 +36,26 @@
             </tr>
         </thead>
         <tbody>
-            @for ($i = 0; $i < 100; $i++)
+            @forelse ($sales as $sale)
             <tr>
-                <td>{{ $i + 1 }}</td>
-                <td>{{ fake()->name() }}</td>
-                <td>{{ fake()->randomElement([fake()->unique()->email(), fake()->mobileNumber()]) }}</td>
-                <td>{{ fake()->name() }}</td>
-                <td>{{ fake()->randomElement(['Marlboro Red', 'Hope', 'Marlboro Blue', 'Marlboro Black', 'Winston']) }}</td>
-                <td class="text-center">{{ mt_rand(1, 50) }}</td>
-                <td>{{ fake()->randomElement(['Tumbler', 'Umbrella', 'Key Chain', 'Earphones']) }}</td>
-                <td class="text-center">{{ mt_rand(1, 5) }}</td>
-                <td>{{ \Illuminate\Support\Carbon::parse(fake()->dateTimeBetween('-1 day'))->diffForHumans() }}</td>
+                <td>{{ $sale->id }}</td>
+                <td>{{ $sale->customer_name }}</td>
+                <td>{{ $sale->customer_contact }}</td>
+                <td>{{ 'John Doe' }}</td>
+                <td>{{ $sale->product }}</td>
+                <td class="text-center">{{ $sale->product_quantity }}</td>
+                <td>{{ $sale->promo }}</td>
+                <td class="text-center">{{ $sale->promo_quantity }}</td>
+                <td>{{ $sale->created_at->diffForHumans() }}</td>
                 <td class="text-center">
-                    <a href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="View Signature">
+                    <a href="{{ route('download', $sale->signature_url) }}" target="_blank" data-bs-toggle="tooltip" data-bs-placement="top" title="View Signature">
                         <i class="ti ti-eye icon" ></i>
                     </a>
                 </td>
             </tr>
-            @endfor
-
+            @empty
+                <h1>Empty Sales</h1>
+            @endforelse
         </tbody>
     </table>
 </div>
@@ -63,7 +64,8 @@
 @section('modals')
 <div class="modal fade" id="ba-create-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
-        <div class="modal-content">
+        <form action="{{ route('data.store') }}" class="modal-content" method="POST" enctype="multipart/form-data">
+            @csrf
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Create Sales</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -87,8 +89,8 @@
                         <input type="text" name="customer_contact" id="customer_contact" class="form-control" required>
                     </div>
                     <div class="col-6 mb-3">
-                        <label for="product_name" class="form-label">Product Name</label>
-                        <select name="product_name" id="product_name" class="form-select">
+                        <label for="product" class="form-label">Product Name</label>
+                        <select name="product" id="product" class="form-select">
                             <option value="Marlboro">Marlboro</option>
                             <option value="Winston">Winston</option>
                             <option value="Camel">Camel</option>
@@ -100,8 +102,8 @@
                         <input name="product_quantity" type="number" id="product_quantity" class="form-control">
                     </div>
                     <div class="col-6 mb-3">
-                        <label for="promo_name" class="form-label">Promo Name</label>
-                        <select name="promo_name" id="promo_name" class="form-select">
+                        <label for="promo" class="form-label">Promo Name</label>
+                        <select name="promo" id="promo" class="form-select">
                             <option value="Tumbler">Tumbler</option>
                             <option value="Mug">Mug</option>
                             <option value="Umbrella">Umbrella</option>
@@ -112,13 +114,17 @@
                         <label for="promo_quantity" class="form-label">Promo Quantity</label>
                         <input name="promo_quantity" type="number" id="promo_quantity" class="form-control">
                     </div>
+                    <div class="col-12 mb-3">
+                        <label for="signature" class="form-label">Signature</label>
+                        <input name="signature" type="file" id="signature" class="form-control" required>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Create</button>
+                <button type="submit" class="btn btn-primary">Create</button>
             </div>
-        </div>
+        </form>
     </div>
 </div>
 @endsection

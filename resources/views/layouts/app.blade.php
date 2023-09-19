@@ -20,6 +20,15 @@
 </head>
 
 <body>
+    @if($disableFlasher ?? false === false)
+        @php
+            if($errors->any()) {
+            foreach($errors->all() as $message) {
+                flasher($message, 'error');
+            }
+        }
+        @endphp
+    @endif
     @yield('body')
 
     @yield('modals')
