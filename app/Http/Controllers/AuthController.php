@@ -20,15 +20,26 @@ class AuthController extends Controller
             'password' => 'required'
         ]);
 
-        if(! Auth::attempt($request->only(['email', 'password']))) {
-            flash('Invalid credentials');
+        if(! Auth::attempt($request->only(['email', 'password']), $request->remember)) {
+            flash('Invalid credentials', 'error');
             return redirect()->route('login');
         }
 
         $user = User::query()->whereEmail($request->input('email'))->first();
 
-        auth()->login($user);
+        auth()->login($user, $request->remember);
 
-        return $this->redirect($user);
+        return (new RedirectController())->redirect($user);
+    }
+
+    public function logout(Request $request)
+    {
+        auth()->logout();
+
+        $request->session()->invalidate();
+
+        $request->session()->regenerateToken();
+
+        return redirect()->route('login');
     }
 }

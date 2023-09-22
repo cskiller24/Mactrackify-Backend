@@ -1,42 +1,136 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\InviteController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BrandAmbassador\BrandAmbassadorController;
+use App\Http\Controllers\HumanResource\HumanResourceController;
+use App\Http\Controllers\RedirectController;
+use App\Http\Controllers\TeamLeader\TeamLeaderController;
+use App\Mail\InviteCreated;
 use App\Models\Sale;
+use App\Models\User;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Route;
 use Rap2hpoutre\FastExcel\FastExcel;
 
-Route::get('/', function () {
-    return inertia('Main');
+Route::get('/', [RedirectController::class, 'redirect']);
+
+/**
+ * GUEST ROUTE
+ * ====================================================
+ */
+
+Route::group(['middleware' => 'guest'], function () {
+    Route::get('/login', [AuthController::class, 'loginView'])->name('login');
+    Route::post('/login', [AuthController::class, 'login'])->name('login.store');
 });
 
+/**
+ * END OF GUEST ROUTE
+ * ====================================================
+ */
 
-Route::view('/login', 'guest.login');
-Route::post('/login', function () {
+/**
+ * AUTH ROUTE
+ * ====================================================
+ */
 
-})->name('login');
+Route::post('/logout', [AuthController::class, 'logout'])
+    ->middleware('auth')
+    ->name('logout');
 
-Route::post('/register', function () {
+Route::get('/invites/accept/{invite:code}', [InviteController::class, 'accept'])->name('invites.accept');
+Route::post('/invites/accept/{invite:code}', [InviteController::class, 'register'])->name('invites.register');
 
-})->name('register');
 
-Route::get('/admin', function() {
-    return view('admin.home');
+/**
+ * END OF AUTH ROUTE
+ * ====================================================
+ */
+
+/**
+ * ADMIN ROUTE
+ * ====================================================
+ */
+
+Route::group([
+    'middleware' => ['auth', 'role:'.User::ADMIN],
+    'as' => 'admin.',
+    'prefix' => '/admin',
+], function () {
+    Route::get('/', [AdminController::class, 'index'])->name('index');
+
+    Route::get('/invites', [InviteController::class, 'index'])->name('invites.index');
+    Route::post('/invites', [InviteController::class, 'create'])->name('invites.store');
+    Route::put('/invites/{invite:code}', [InviteController::class, 'update'])->name('invites.update');
+    Route::get('/invites/resend/{invite:code}', [InviteController::class, 'resend'])->name('invites.resend');
 });
 
-Route::get('/admin/invites', function () {
-    return view('admin.invites.index');
-})->name('admin.invites');
+/**
+ * END OF ADMIN ROUTE
+ * ====================================================
+ */
+
+ /**
+ * TEAM LEADER ROUTE
+ * ====================================================
+ */
+
+Route::group([
+    'middleware' => ['auth', 'role:'.User::TEAM_LEADER],
+    'as' => 'team-leader.',
+    'prefix' => '/team-leader',
+], function () {
+    Route::get('/', [TeamLeaderController::class, 'index'])->name('index');
+});
+
+/**
+ * END OF TEAM LEADER ROUTE
+ * ====================================================
+ */
+
+/**
+ * HUMAN RESOURCE ROUTE
+ * ====================================================
+ */
+
+Route::group([
+    'middleware' => ['auth', 'role:'.User::HUMAN_RESOURCE],
+    'as' => 'human-resource.',
+    'prefix' => '/human-resource',
+], function () {
+    Route::get('/', [HumanResourceController::class, 'index'])->name('index');
+});
+
+/**
+ * END OF HUMAN RESOURCE ROUTE
+ * ====================================================
+ */
+
+/**
+ * BRAND AMBASSADOR ROUTE
+ * ====================================================
+ */
+
+Route::group([
+    'middleware' => ['auth', 'role:'.User::BRAND_AMBASSADOR],
+    'as' => 'brand-ambassador.',
+    'prefix' => '/brand-ambassador',
+], function () {
+    Route::get('/', [BrandAmbassadorController::class, 'index'])->name('index');
+});
+
+/**
+ * END OF BRAND AMBASSADOR ROUTE
+ * ====================================================
+ */
 
 Route::get('/admin/teams', function () {
     return view('admin.teams.index');
 })->name('admin.teams');
-
-Route::get('/team-leader', function () {
-    return view('team-leader.index');
-})->name('team-leader.index');
 
 Route::get('/team-leader/brand-ambassadors', function () {
     return view('team-leader.brand-ambassadors');
@@ -50,10 +144,6 @@ Route::get('/team-leader/tracking', function () {
     return view('team-leader.tracking');
 })->name('team-leader.tracking');
 
-Route::get('/brand-ambassador', function () {
-    return view('brand-ambassador.index');
-})->name('brand-ambassador.index');
-
 Route::get('/brand-ambassador/data', function () {
     return view('brand-ambassador.data', ['sales' => Sale::all(), 'totalSales' => Sale::count()]);
 })->name('brand-ambassador.data');
@@ -65,10 +155,6 @@ Route::get('/brand-ambassador/tracking', function () {
 Route::get('/brand-ambassador/schedule', function () {
     return view('brand-ambassador.schedule');
 })->name('brand-ambassador.schedule');
-
-Route::get('/human-resource', function () {
-    return view('human-resource.index');
-})->name('human-resource.index');
 
 Route::get('/human-resource/brand-ambassador', function () {
     return view('human-resource.brand-ambassador');
@@ -143,3 +229,7 @@ Route::get('/data/export', function () {
 
     return (new FastExcel($sales))->download(date('Y-m-d').'-sales.xlsx');
 })->name('data.export');
+
+Route::get('/mail', function () {
+    return new InviteCreated();
+});

@@ -3,12 +3,12 @@
         [
             'name' => 'Dashboard',
             'icon' => 'home',
-            'link' => ''
+            'link' => route('admin.index')
         ],
         [
             'name' => 'Invites',
             'icon' => 'send',
-            'link' => route('admin.invites')
+            'link' => route('admin.invites.index')
         ],
         [
             'name' => 'Teams',
@@ -24,7 +24,7 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <h1 class="navbar-brand navbar-brand-autodark">
-            <a href="" class="h2">
+            <a href="{{ route('admin.index') }}" class="h2">
                 Mactrackify
             </a>
         </h1>
@@ -32,12 +32,13 @@
         <div class="navbar-nav flex-row d-lg-none">
             <div class="nav-item">
                 <div class="dropdown">
-                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Hello
-                        {{ auth()->user()->name ?? 'Admin' }}!</a>
+                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+                        Hello {{ auth()->user()->last_name }}!
+                    </a>
                     <div class="dropdown-menu">
                         <a class="dropdown-item" href="">Settings</a>
                         <div class="dropdown-divider"></div>
-                        <form action="" method="post">
+                        <form action="{{ route('logout') }}" method="post">
                             @csrf
                             <button type="submit" class="dropdown-item">Logout</button>
                         </form>

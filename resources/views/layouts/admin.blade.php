@@ -3,7 +3,7 @@
 @section('body')
     <div class="page">
     <!-- Sidebar -->
-    @include('components.test-nav')
+    @include('admin.components.nav')
         <div class="page-wrapper">
             <!-- Page header -->
             <div class="page-header d-print-none">
@@ -26,11 +26,11 @@
                             <div class="btn-list">
                                 <div class="dropdown">
                                     <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Hello
-                                        {{ auth()->user()->name ?? 'Admin Name' }}!</a>
+                                        {{ auth()->user()->first_name }}!</a>
                                     <div class="dropdown-menu">
                                         <a class="dropdown-item" href="">Settings</a>
                                         <div class="dropdown-divider"></div>
-                                        <form action="" method="post">
+                                        <form action="{{ route('logout') }}" method="post">
                                             @csrf
                                             <button type="submit" class="dropdown-item">Logout</button>
                                         </form>

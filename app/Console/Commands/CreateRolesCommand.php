@@ -14,9 +14,15 @@ class CreateRolesCommand extends Command
 
     public function handle()
     {
-        Role::findOrCreate(User::BRAND_AMBASSADOR);
-        Role::findOrCreate(User::TEAM_LEADER);
-        Role::findOrCreate(User::ADMIN);
+        foreach (User::rolesList() as $role) {
+            try {
+                Role::findOrCreate($role);
+                $this->info("Created {$role} role");
+            } catch (\Exception $e) {
+                $this->error('Something went wrong');
+                throw $e;
+            }
+        }
 
         $this->info('Roles created succesfully');
 

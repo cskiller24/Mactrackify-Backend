@@ -13,12 +13,15 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable, HasRoles;
 
-    const BRAND_AMBASSADOR = 'brand_ambassador';
-    const TEAM_LEADER = 'team_leader';
     const ADMIN = 'admin';
+    const TEAM_LEADER = 'team_leader';
+    const HUMAN_RESOURCE = 'human_resource';
+    const BRAND_AMBASSADOR = 'brand_ambassador';
 
     protected $fillable = [
-        'name',
+        'first_name',
+        'middle_name',
+        'last_name',
         'email',
         'password',
     ];
@@ -32,4 +35,34 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public static function rolesList(): array
+    {
+        return [
+            self::ADMIN,
+            self::TEAM_LEADER,
+            self::HUMAN_RESOURCE,
+            self::BRAND_AMBASSADOR,
+        ];
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->hasRole(self::ADMIN);
+    }
+
+    public function isTeamLeader(): bool
+    {
+        return $this->hasRole(self::TEAM_LEADER);
+    }
+
+    public function isHumanResource(): bool
+    {
+        return $this->hasRole(self::HUMAN_RESOURCE);
+    }
+
+    public function isBrandAmbassador(): bool
+    {
+        return $this->hasRole(self::BRAND_AMBASSADOR);
+    }
 }

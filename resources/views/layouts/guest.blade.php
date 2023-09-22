@@ -11,11 +11,20 @@
     <link href="{{ asset('dist/tabler/css/tabler-vendors.min.css') }}" rel="stylesheet">
 
     <title>
-        @yield('title', 'EResponder')
+        @yield('title', 'Mactrackify')
     </title>
 </head>
 
 <body class="h-100">
+    @if($disableFlasher ?? false === false)
+        @php
+            if($errors->any()) {
+            foreach($errors->all() as $message) {
+                flasher($message, 'error');
+            }
+        }
+        @endphp
+    @endif
     <div class="d-flex justify-content-center align-items-center">
         @yield('content')
     </div>
