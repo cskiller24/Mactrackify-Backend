@@ -3,6 +3,8 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -46,6 +48,11 @@ class User extends Authenticatable
         ];
     }
 
+    /**
+     * ======================
+     * Attributes
+     */
+
     public function isAdmin(): bool
     {
         return $this->hasRole(self::ADMIN);
@@ -64,5 +71,58 @@ class User extends Authenticatable
     public function isBrandAmbassador(): bool
     {
         return $this->hasRole(self::BRAND_AMBASSADOR);
+    }
+
+    public function hasTeams()
+    {
+        return $this->teams()->count() > 0;
+    }
+
+    public function fullName(): Attribute
+    {
+        return Attribute::make(
+            get: fn() => "{$this->last_name}, {$this->first_name} {$this->middle_name}"
+        );
+    }
+
+    /**
+     * ======================
+     * RELATIONSHIPS
+     */
+
+    public function teams()
+    {
+        return $this->belongsToMany(Team::class, 'teams_users')
+            ->withPivot('is_leader')
+            ->withTimestamps();
+    }
+
+    /**
+     * ======================
+     * SCOPES
+     */
+    public function scopeWithoutTeam(Builder $query)
+    {
+        return $query->whereDoesntHave('teams');
+    }
+
+    public function scopeAdmin(Builder $query)
+    {
+        return $query->role(self::ADMIN);
+    }
+
+    public function scopeTeamLeader(Builder $query)
+    {
+        return $query->role(self::TEAM_LEADER);
+    }
+
+    public function scopeHumanResource(Builder $query)
+    {
+        return $query->role(self::HUMAN_RESOURCE);
+    }
+
+    public function scopeBrandAmbassador(Builder $query)
+    {
+        return $query->role(self::BRAND_AMBASSADOR);
     }
 }

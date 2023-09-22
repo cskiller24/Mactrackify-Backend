@@ -12,7 +12,7 @@
 
     <div class="col-6 d-flex justify-content-end align-items-center">
         <div class="fs-3 mx-3">
-            Total Teams: 10000
+            Total Teams: {{ $total }}
         </div>
         <a href="" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#team-create-modal">
             <i class="ti ti-plus icon"></i>
@@ -24,14 +24,14 @@
 
 @section('content')
 <div class="accordion" id="accordionExample">
-    @for ($i = 0; $i < 10; $i++)
+    @forelse ($teams as $team)
     <div class="accordion-item">
         <h2 class="accordion-header" id="headingOne">
-          <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne{{ $i }}" aria-expanded="true" aria-controls="collapseOne{{ $i }}">
-            {{ fake()->words(mt_rand(3,5), true).' - '.fake()->words(mt_rand(3,5), true) }}
+          <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne{{ $team->id }}" aria-expanded="true" aria-controls="collapseOne{{ $team->id }}">
+            {{ $team->name. '' .$team->location }}
           </button>
         </h2>
-        <div id="collapseOne{{ $i }}" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+        <div id="collapseOne{{ $team->id }}" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
             <div class="accordion-body">
                 <table class="table table-striped">
                     <thead>
@@ -42,25 +42,34 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @for ($j = 0; $j < rand(5, 20); $j++)
-                        <tr>
-                            <td>{{ $j + 1 }}</td>
-                            <td>{{ fake()->name() }}</td>
-                            <td><x-role-badge role="{{$j === 0 ? 'team_leader' : 'brand_ambassador'}}" /></td>
-                        </tr>
-                        @endfor
+                        @forelse ($team->users as $user)
+                            <tr>
+                                <td>{{ $user->id }}</td>
+                                <td>{{ $user->full_name }}</td>
+                                <td>@include('components.role-badge', ['user' => $user])</td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="3">
+                                    <h1 class="mt-4 text-center">No entries found.</h1>
+                                </td>
+                            </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
-    @endfor
+    @empty
+        <h1 class="mt-3 text-center card p-5" >No entries found</h1>
+    @endforelse
 @endsection
 
 @section('modals')
 <div class="modal fade" id="team-create-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
-        <div class="modal-content">
+        <form class="modal-content" action="{{ route('admin.teams.store') }}" method="POST">
+            @csrf
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Create Invitation</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -76,22 +85,23 @@
                         <input type="text" name="location" id="location" class="form-control" placeholder="Enter the location">
                     </div>
                     <div class="col-12 mb-3">
-                        <label for="role" class="form-label">Team Leader</label>
-                        <select name="role" id="role" class="form-select">
+                        <label for="team_leader" class="form-label">Team Leader</label>
+                        <select name="team_leader" id="team_leader" class="form-select">
                             <option value="" selected disabled>-- Select Team Leader --</option>
-                            <option value="admin">Juan Dela Cruz</option>
-                            <option value="team_leader">Jane Doe</option>
+                            @foreach ($teamLeaderCreate as $teamLeader)
+                                <option value="{{ $teamLeader->id }}">{{ $teamLeader->full_name }}</option>
+                            @endforeach
                         </select>
                     </div>
                     <div class="col-12 mb-3">
                         <label for="ba_select" class="form-label">Brand Ambassadors</label>
                         <div class="row">
-                            @for ($i = 0; $i < rand(5, 10); $i++)
+                            @foreach ($brandAmbassadorCreate as $brandAmbassador)
                             <div class="col-4 d-flex">
-                                <input type="checkbox" name="brand_ambassador[]" class="form-check me-1" id="ba_{{ $i }}">
-                                <label for="ba_{{ $i }}" class="form-check-label align-middle">{{ fake()->name() }}</label>
+                                <input type="checkbox" name="brand_ambassador[]" class="form-check me-1" id="ba_{{ $brandAmbassador->id }}" value="{{ $brandAmbassador->id }}">
+                                <label for="ba_{{ $brandAmbassador->id }}" class="form-check-label align-middle">{{ $brandAmbassador->full_name }}</label>
                             </div>
-                            @endfor
+                            @endforeach
                         </div>
 
                     </div>
@@ -99,9 +109,9 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Create</button>
+                <button type="submit" class="btn btn-primary">Create</button>
             </div>
-        </div>
+        </form>
     </div>
 </div>
 @endsection

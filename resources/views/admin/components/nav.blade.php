@@ -13,7 +13,7 @@
         [
             'name' => 'Teams',
             'icon' => 'users',
-            'link' => route('admin.teams')
+            'link' => route('admin.teams.index')
         ],
     ]
 @endphp

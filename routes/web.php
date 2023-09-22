@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\InviteController;
+use App\Http\Controllers\Admin\TeamController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BrandAmbassador\BrandAmbassadorController;
 use App\Http\Controllers\HumanResource\HumanResourceController;
@@ -67,6 +68,9 @@ Route::group([
     Route::post('/invites', [InviteController::class, 'create'])->name('invites.store');
     Route::put('/invites/{invite:code}', [InviteController::class, 'update'])->name('invites.update');
     Route::get('/invites/resend/{invite:code}', [InviteController::class, 'resend'])->name('invites.resend');
+
+    Route::get('/teams', [TeamController::class, 'index'])->name('teams.index');
+    Route::post('/teams', [TeamController::class, 'store'])->name('teams.store');
 });
 
 /**
@@ -127,10 +131,6 @@ Route::group([
  * END OF BRAND AMBASSADOR ROUTE
  * ====================================================
  */
-
-Route::get('/admin/teams', function () {
-    return view('admin.teams.index');
-})->name('admin.teams');
 
 Route::get('/team-leader/brand-ambassadors', function () {
     return view('team-leader.brand-ambassadors');
