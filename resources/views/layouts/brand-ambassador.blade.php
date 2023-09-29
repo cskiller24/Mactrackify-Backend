@@ -2,7 +2,7 @@
 
 @section('body')
 <div class="page">
-    @include('components.test-nav')
+    @include('brand-ambassador.components.nav')
     <div class="page-wrapper">
         <!-- Page header -->
         <div class="page-header d-print-none">

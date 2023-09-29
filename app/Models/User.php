@@ -3,9 +3,13 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -73,7 +77,7 @@ class User extends Authenticatable
         return $this->hasRole(self::BRAND_AMBASSADOR);
     }
 
-    public function hasTeams()
+    public function hasTeams(): bool
     {
         return $this->teams()->count() > 0;
     }
@@ -90,11 +94,29 @@ class User extends Authenticatable
      * RELATIONSHIPS
      */
 
-    public function teams()
+    public function teams(): BelongsToMany
     {
         return $this->belongsToMany(Team::class, 'teams_users')
             ->withPivot('is_leader')
             ->withTimestamps();
+    }
+
+    public function statuses(): HasMany
+    {
+        return $this->hasMany(Status::class);
+    }
+
+    public function sales()
+    {
+        if($this->brandAmbassador()) {
+            return $this->hasMany(Sale::class, 'brand_ambassador_id');
+        }
+
+        if($this->isTeamLeader()) {
+            return $this->hasMany(Sale::class, 'team_leader_id');
+        }
+
+        throw new Exception("User is neither brand ambassador or team leader when accessing sales");
     }
 
     /**
@@ -124,5 +146,10 @@ class User extends Authenticatable
     public function scopeBrandAmbassador(Builder $query)
     {
         return $query->role(self::BRAND_AMBASSADOR);
+    }
+
+    public function latestStatus()
+    {
+        return $this->statuses()->latest()->limit(1);
     }
 }

@@ -89,6 +89,9 @@ Route::group([
     'prefix' => '/team-leader',
 ], function () {
     Route::get('/', [TeamLeaderController::class, 'index'])->name('index');
+    Route::get('/brand-ambassadors', [TeamLeaderController::class, 'brandAmbassadorsIndex'])->name('brand_ambassadors');
+    Route::get('/data', [TeamLeaderController::class, 'dataIndex'])->name('data');
+    Route::post('/data/export', [TeamLeaderController::class, 'dataExport'])->name('data.export');
 });
 
 /**
@@ -131,15 +134,6 @@ Route::group([
  * END OF BRAND AMBASSADOR ROUTE
  * ====================================================
  */
-
-Route::get('/team-leader/brand-ambassadors', function () {
-    return view('team-leader.brand-ambassadors');
-})->name('team-leader.brand_ambassadors');
-
-Route::get('/team-leader/data', function () {
-    return view('team-leader.data', ['sales' => Sale::all(), 'totalSales' => Sale::count()]);
-})->name('team-leader.data');
-
 Route::get('/team-leader/tracking', function () {
     return view('team-leader.tracking');
 })->name('team-leader.tracking');
@@ -209,27 +203,6 @@ Route::get('/download/{path}', function ($path) {
     }
 })->name('download');
 
-Route::get('/data/export', function () {
-    $sales = Sale::all();
-
-    $sales = $sales->map(function (Sale $sale) {
-        return [
-            'Team Name' => $sale->team_name,
-            'Team Leader' => $sale->team_leader_name,
-            'Brand Ambassador' => $sale->brand_ambassador_name,
-            'Customer Name' => $sale->customer_name,
-            'Customer Contact' => $sale->customer_contact,
-            'Product Name' => $sale->product,
-            'Product Quantity' => $sale->product_quantity,
-            'Promo' => $sale->promo,
-            'Promo Quantity' => $sale->promo_quantity,
-            'Signature' => route('download', $sale->signature_url)
-        ];
-    });
-
-    return (new FastExcel($sales))->download(date('Y-m-d').'-sales.xlsx');
-})->name('data.export');
-
-Route::get('/mail', function () {
-    return new InviteCreated();
-});
+// Route::get('/mail', function () {
+//     return new InviteCreated();
+// });

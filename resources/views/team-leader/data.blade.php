@@ -18,13 +18,16 @@
 
     <div class="col-6 d-flex justify-content-end align-items-center">
         <div class="fs-3 mx-3">
-            Total Data: <b>{{ $totalSales ?? 0 }}</b>
+            Total Data: <b>{{ $sales->count() ?? 0 }}</b>
         </div>
 
-        <a href="" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#team-create-modal">
-            <i class="ti ti-file-export icon"></i>
-            Export to XLXS
-        </a>
+        <form action="{{ route('team-leader.data.export') }}" method="post">
+            @csrf
+            <button type="submit" class="btn btn-outline-primary">
+                <i class="ti ti-file-export icon"></i>
+                Export to XLXS
+            </button>
+        </form>
     </div>
 </div>
 @endsection

@@ -13,11 +13,12 @@ return new class extends Migration
     {
         Schema::create('sales', function (Blueprint $table) {
             $table->id();
-            $table->string('team_name');
-            $table->string('team_leader_name');
-            $table->string('brand_ambassador_name');
+            $table->foreignId('team_id')->constrained();
+            $table->foreignId('team_leader_id')->constrained('users');
+            $table->foreignId('brand_ambassador_id')->constrained('users');
             $table->string('customer_name');
             $table->string('customer_contact');
+            $table->string('customer_age');
             $table->string('product');
             $table->integer('product_quantity');
             $table->string('promo');

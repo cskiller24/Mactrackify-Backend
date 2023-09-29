@@ -1,4 +1,6 @@
 *
 !public/
 !images/
+!images/customer/
+!images/customer/test_signature.png
 !.gitignore
