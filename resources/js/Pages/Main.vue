@@ -1,5 +1,5 @@
 <template>
-    adadd
+    <ba-tracking></ba-tracking>
 </template>
 
 <script setup>

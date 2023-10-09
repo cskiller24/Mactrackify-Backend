@@ -9,12 +9,14 @@ use App\Http\Controllers\HumanResource\HumanResourceController;
 use App\Http\Controllers\RedirectController;
 use App\Http\Controllers\TeamLeader\TeamLeaderController;
 use App\Mail\InviteCreated;
+use App\Mail\SendAvailabilityNotification;
 use App\Models\Sale;
 use App\Models\User;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
 use Rap2hpoutre\FastExcel\FastExcel;
 
 Route::get('/', [RedirectController::class, 'redirect']);
@@ -92,6 +94,7 @@ Route::group([
     Route::get('/brand-ambassadors', [TeamLeaderController::class, 'brandAmbassadorsIndex'])->name('brand_ambassadors');
     Route::get('/data', [TeamLeaderController::class, 'dataIndex'])->name('data');
     Route::post('/data/export', [TeamLeaderController::class, 'dataExport'])->name('data.export');
+    Route::get('/tracking', [TeamLeaderController::class, 'trackingIndex'])->name('tracking');
 });
 
 /**
@@ -110,6 +113,9 @@ Route::group([
     'prefix' => '/human-resource',
 ], function () {
     Route::get('/', [HumanResourceController::class, 'index'])->name('index');
+    Route::get('/brand-ambassador', [HumanResourceController::class, 'brandAmbassadorsIndex'])->name('brand-ambassador');
+    Route::get('/deployment', [HumanResourceController::class, 'deploymentIndex'])->name('deployment');
+    Route::get('/send-notification/{user}', [HumanResourceController::class, 'sendNotification'])->name('notification-send');
 });
 
 /**
@@ -128,70 +134,22 @@ Route::group([
     'prefix' => '/brand-ambassador',
 ], function () {
     Route::get('/', [BrandAmbassadorController::class, 'index'])->name('index');
+    Route::get('/data', [BrandAmbassadorController::class, 'dataIndex'])->name('data');
+    Route::post('/data', [BrandAmbassadorController::class, 'dataStore'])->name('data.store');
+    Route::get('/tracking', [BrandAmbassadorController::class, 'trackingIndex'])->name('tracking');
+    Route::post('/test-track', [BrandAmbassadorController::class, 'toggleTracking'])->name('test.track');
 });
 
 /**
  * END OF BRAND AMBASSADOR ROUTE
  * ====================================================
  */
-Route::get('/team-leader/tracking', function () {
-    return view('team-leader.tracking');
-})->name('team-leader.tracking');
 
-Route::get('/brand-ambassador/data', function () {
-    return view('brand-ambassador.data', ['sales' => Sale::all(), 'totalSales' => Sale::count()]);
-})->name('brand-ambassador.data');
-
-Route::get('/brand-ambassador/tracking', function () {
-    return view('brand-ambassador.tracking');
-})->name('brand-ambassador.tracking');
 
 Route::get('/brand-ambassador/schedule', function () {
     return view('brand-ambassador.schedule');
 })->name('brand-ambassador.schedule');
 
-Route::get('/human-resource/brand-ambassador', function () {
-    return view('human-resource.brand-ambassador');
-})->name('human-resource.brand-ambassador');
-
-Route::get('/human-resource/deployment', function () {
-    return view('human-resource.deployment');
-})->name('human-resource.deployment');
-
-Route::post('/data', function (Request $request) {
-    $request->validate([
-        'team_leader_name' => 'required',
-        'brand_ambassador_name' => 'required',
-        'customer_name' => 'required',
-        'customer_contact' => 'required',
-        'product' => 'required',
-        'product_quantity' => 'required',
-        'promo' => 'required',
-        'promo_quantity' => 'required',
-        'signature' => 'required'
-    ]);
-
-    $file = $request->file('signature')->store('', 'customer_images');
-
-    $data = $request->only([
-        'team_leader_name',
-        'brand_ambassador_name',
-        'customer_name',
-        'customer_contact',
-        'product',
-        'product_quantity',
-        'promo',
-        'promo_quantity',
-    ]);
-
-    $data['signature'] = $file;
-    $data['team_name'] = 'Team A';
-
-    Sale::create($data);
-
-    flash('Successfully Added Sales');
-    return redirect()->route('brand-ambassador.data');
-})->name('data.store');
 
 Route::get('/download/{path}', function ($path) {
     try {
@@ -203,6 +161,10 @@ Route::get('/download/{path}', function ($path) {
     }
 })->name('download');
 
-// Route::get('/mail', function () {
-//     return new InviteCreated();
-// });
+Route::get('test', function () {
+    return Inertia::render('Main');
+});
+
+Route::get('/mail', function () {
+    return new SendAvailabilityNotification(auth()->user());
+});

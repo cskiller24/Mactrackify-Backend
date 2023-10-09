@@ -3,7 +3,7 @@
 @section('body')
     <div class="page">
     <!-- Sidebar -->
-    @include('components.test-nav')
+    @include('human-resource.components.nav')
         <div class="page-wrapper">
             <!-- Page header -->
             <div class="page-header d-print-none">
@@ -30,7 +30,7 @@
                                     <div class="dropdown-menu">
                                         <a class="dropdown-item" href="">Settings</a>
                                         <div class="dropdown-divider"></div>
-                                        <form action="" method="post">
+                                        <form action="{{ route('logout') }}" method="post">
                                             @csrf
                                             <button type="submit" class="dropdown-item">Logout</button>
                                         </form>

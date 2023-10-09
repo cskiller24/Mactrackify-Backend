@@ -20,6 +20,7 @@ class Sale extends Model
         'brand_ambassador_id',
         'customer_name',
         'customer_contact',
+        'customer_age',
         'product',
         'product_quantity',
         'promo',

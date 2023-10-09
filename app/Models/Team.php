@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -41,5 +42,12 @@ class Team extends Model
     public function users()
     {
         return $this->belongsToMany(User::class, 'teams_users')->withPivot('is_leader');
+    }
+
+    public function scopeTeamLeaderWide(Builder $query)
+    {
+        return $query->whereHas('leaders', function ($q) {
+            $q->where('users.id', auth()->id());
+        });
     }
 }

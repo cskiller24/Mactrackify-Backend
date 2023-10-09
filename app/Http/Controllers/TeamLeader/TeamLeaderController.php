@@ -5,6 +5,8 @@ namespace App\Http\Controllers\TeamLeader;
 use App\Http\Controllers\Controller;
 use App\Models\Sale;
 use App\Models\Team;
+use App\Models\Track;
+use App\Models\User;
 use Rap2hpoutre\FastExcel\FastExcel;
 
 class TeamLeaderController extends Controller
@@ -19,7 +21,7 @@ class TeamLeaderController extends Controller
     {
         $team = Team::query()->whereHas('leaders', function ($query) {
             $query->where('users.id', auth()->id());
-        })->with(['members.latestStatus', 'members.sales'])->first();
+        })->with(['members.sales'])->first();
 
         return view('team-leader.brand-ambassadors', compact('team'));
     }
@@ -49,5 +51,12 @@ class TeamLeaderController extends Controller
         });
 
         return (new FastExcel($toExcel))->download('sales-'.date('Y-m-d').'.xlsx');
+    }
+
+    public function trackingIndex()
+    {
+        $team = Team::teamLeaderWide()->with(['members'])->first();
+
+        return view('team-leader.tracking', compact('team'));
     }
 }

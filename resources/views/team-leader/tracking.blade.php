@@ -29,16 +29,22 @@
                 </tr>
             </thead>
             <tbody>
-                @for ($i = 0; $i < rand(1,20); $i++)
+                @forelse ($team?->members as $member)
+                <tr>
+                    <td>{{ $member->id }}</td>
+                    <td>{{ $member->full_name }}</td>
+                    <td>{{ $member->latest_track?->latitude ?? 0 }}, {{ $member->latest_track?->longitude ?? 0 }}</td>
+                    <td>{{ $member->latest_track?->location ?? 'Unknown' }}</td>
+                    <td>@include('team-leader.components.tracking-status', ['tracking' => $member->latest_track])</td>
+                    <td>{{ $member->lastest_track?->created_at?->diffForHumans() ?? 'No date' }}</td>
+                </tr>
+                @empty
                     <tr>
-                        <td>{{ $i+1 }}</td>
-                        <td>{{ fake()->name() }}</td>
-                        <td>{{ fake()->localCoordinates()['latitude'].', '.fake()->localCoordinates()['longitude'] }}</td>
-                        <td>{{ fake()->city() }}</td>
-                        <td>@include('team-leader.components.tracking-status')</td>
-                        <td>{{ \Illuminate\Support\Carbon::parse(fake()->dateTimeBetween('-1 day'))->diffForHumans() }}</td>
+                        <td colspan="6">
+                            <h1>There are not tracks available</h1>
+                        </td>
                     </tr>
-                @endfor
+                @endforelse
             </tbody>
         </table>
     </div>

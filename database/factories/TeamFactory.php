@@ -30,7 +30,6 @@ class TeamFactory extends Factory
             $brandAmbassadors = User::brandAmbassador()
                 ->withoutTeam()
                 ->get()
-                ->random(5)
                 ->pluck('id');
             $team->users()->attach($teamLeader->id, ['is_leader' => true]);
             $team->users()->attach($brandAmbassadors);

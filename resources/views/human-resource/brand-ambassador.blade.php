@@ -12,12 +12,8 @@
 
     <div class="col-6 d-flex justify-content-end align-items-center">
         <div class="fs-3 mx-3">
-            Total Data: {{ $totalSales ?? 0 }}
+            Total Brand Ambassadors: {{ $brandAmbassadors?->count() ?? 0 }}
         </div>
-        <a href="" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#ba-create-modal">
-            <i class="ti ti-plus icon"></i>
-            Data
-        </a>
     </div>
 </div>
 @endsection
@@ -30,20 +26,26 @@
                 <th scope="col">#</th>
                 <th scope="col">Name</th>
                 <th scope="col">Email</th>
-                <th scope="col">Location</th>
+                <th scope="col">Role</th>
                 <th scope="col">Status</th>
             </tr>
         </thead>
         <tbody>
-            @for ($i = 0; $i < 10; $i++)
+            @forelse ($brandAmbassadors as $user)
                 <tr>
-                    <td>{{ $i + 1 }}</td>
-                    <td>{{ fake()->name() }}</td>
-                    <td>{{ fake()->unique()->email() }}</td>
-                    <td>{{ fake()->city() }}</td>
-                    <td>@include('human-resource.components.ba-status')</td>
+                    <td>{{ $user->id }}</td>
+                    <td>{{ $user->full_name }}</td>
+                    <td>{{ $user->email }}</td>
+                    <td>@include('components.role-badge', ['user' => $user])</td>
+                    <td>@include('human-resource.components.ba-status', ['status' => $user->latest_status])</td>
                 </tr>
-            @endfor
+            @empty
+                <tr>
+                    <td colspan="5">
+                        <h1>No entries.</h1>
+                    </td>
+                </tr>
+            @endforelse
         </tbody>
     </table>
 </div>

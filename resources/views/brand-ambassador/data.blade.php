@@ -1,5 +1,7 @@
 @extends('layouts.brand-ambassador')
 
+@section('title', 'Sales Data')
+
 @section('content-header')
 <div class="row">
     <div class="col">
@@ -8,7 +10,7 @@
 
     <div class="col-6 d-flex justify-content-end align-items-center">
         <div class="fs-3 mx-3">
-            Total Data: {{ $totalSales ?? 0 }}
+            Total Data: {{ $sales?->count() ?? 0 }}
         </div>
         <a href="" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#ba-create-modal">
             <i class="ti ti-plus icon"></i>
@@ -41,7 +43,7 @@
                 <td>{{ $sale->id }}</td>
                 <td>{{ $sale->customer_name }}</td>
                 <td>{{ $sale->customer_contact }}</td>
-                <td>{{ 'John Doe' }}</td>
+                <td>{{ auth()->user()->full_name }}</td>
                 <td>{{ $sale->product }}</td>
                 <td class="text-center">{{ $sale->product_quantity }}</td>
                 <td>{{ $sale->promo }}</td>
@@ -64,7 +66,7 @@
 @section('modals')
 <div class="modal fade" id="ba-create-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
-        <form action="{{ route('data.store') }}" class="modal-content" method="POST" enctype="multipart/form-data">
+        <form action="{{ route('brand-ambassador.data.store') }}" class="modal-content" method="POST" enctype="multipart/form-data">
             @csrf
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Create Sales</h5>
@@ -73,14 +75,16 @@
             <div class="modal-body">
                 <div class="row">
                     <div class="col-12 mb-3">
+                        <input type="hidden" name="team_leader_id" value="{{ $teamLeader->id }}">
+                        <input type="hidden" name="team_id" value="{{ $team->id }}">
                         <label for="team_leader_name" class="form-label">Team Leader Name</label>
-                        <input type="text" name="team_leader_name" id="team_leader_name" class="form-control form-disabled" readonly value="Juan Dela Cruz">
+                        <input type="text" name="team_leader_name" id="team_leader_name" class="form-control form-disabled" readonly value="{{ $teamLeader->full_name }}">
                     </div>
                     <div class="col-12 mb-3">
                         <label for="brand_ambassador_name" class="form-label">Brand Ambassador Leader Name</label>
-                        <input type="text" name="brand_ambassador_name" id="brand_ambassador_name" class="form-control form-disabled" readonly value="John Doe">
+                        <input type="text" name="brand_ambassador_name" id="brand_ambassador_name" class="form-control form-disabled" readonly value="{{ auth()->user()->full_name }}">
                     </div>
-                    <div class="col-6 mb-3">
+                    <div class="col-12 mb-3">
                         <label for="customer_name" class="form-label">Customer Name</label>
                         <input type="text" name="customer_name" id="customer_name" class="form-control" required>
                     </div>
@@ -89,12 +93,16 @@
                         <input type="text" name="customer_contact" id="customer_contact" class="form-control" required>
                     </div>
                     <div class="col-6 mb-3">
+                        <label for="customer_age" class="form-label">Customer Age</label>
+                        <input type="text" name="customer_age" id="customer_age" class="form-control" required pattern="^(1[8-9]|[2-9]\d+)$" placeholder="Please enter the age (must be 18 above)">
+                    </div>
+                    <div class="col-6 mb-3">
                         <label for="product" class="form-label">Product Name</label>
                         <select name="product" id="product" class="form-select">
-                            <option value="Marlboro">Marlboro</option>
-                            <option value="Winston">Winston</option>
-                            <option value="Camel">Camel</option>
-                            <option value="Pall Mall">Pall Mall</option>
+                            <option value="Product A">Product A</option>
+                            <option value="Product B">Product B</option>
+                            <option value="Product C">Product C</option>
+                            <option value="Product D">Product D</option>
                         </select>
                     </div>
                     <div class="col-6 mb-3">

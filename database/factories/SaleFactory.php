@@ -19,11 +19,11 @@ class SaleFactory extends Factory
     public function definition(): array
     {
         $team = Team::first();
-        $members = $team->members()->inRandomOrder()->get()->pluck('id')->toArray();
+        $members = $team->members()->inRandomOrder()->first();
         return [
             'team_id' => $team->id,
             'team_leader_id' => $team->leaders->first()->id,
-            'brand_ambassador_id' => Arr::random($members),
+            'brand_ambassador_id' => $members->id,
             'customer_name' => fake()->name(),
             'customer_contact' => fake()->randomElement([fake()->email(), fake()->mobileNumber()]),
             'customer_age' => rand(18, 60),

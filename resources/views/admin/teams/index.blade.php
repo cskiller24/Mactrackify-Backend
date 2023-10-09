@@ -27,9 +27,11 @@
     @forelse ($teams as $team)
     <div class="accordion-item">
         <h2 class="accordion-header" id="headingOne">
-          <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne{{ $team->id }}" aria-expanded="true" aria-controls="collapseOne{{ $team->id }}">
-            {{ $team->name. '' .$team->location }}
-          </button>
+            <div class="d-flex justify-content-between">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne{{ $team->id }}" aria-expanded="true" aria-controls="collapseOne{{ $team->id }}">
+                    {{ $team->name. '' .$team->location }}
+                </button>
+            </div>
         </h2>
         <div id="collapseOne{{ $team->id }}" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
             <div class="accordion-body">
@@ -48,6 +50,7 @@
                                 <td>{{ $user->full_name }}</td>
                                 <td>@include('components.role-badge', ['user' => $user])</td>
                             </tr>
+
                         @empty
                             <tr>
                                 <td colspan="3">
@@ -57,6 +60,14 @@
                         @endforelse
                     </tbody>
                 </table>
+                @if ($team)
+                <div class="w-100">
+                    <button class="btn btn-outline-primary btn-block w-100" data-bs-toggle="modal" data-bs-toggle="#edit-{{ $team->id }}-modal">
+                        <i class="ti ti-pencil"></i>
+                        Edit
+                    </button>
+                </div>
+                @endif
             </div>
         </div>
     </div>

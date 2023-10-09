@@ -40,7 +40,7 @@
             <th scope="row">{{ $user->id }}</th>
             <td>{{ $user->name }}</td>
             <td>{{ $user->email }}</td>
-            <td>@include('team-leader.components.status', ['status' => $user->latestStatus->first()])</td>
+            <td>@include('team-leader.components.status', ['status' => $user->latestStatus])</td>
             <td>{{ $user->sales->count() }}</td>
         </tr>
         @endforeach

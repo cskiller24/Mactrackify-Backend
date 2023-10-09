@@ -89,6 +89,20 @@ class User extends Authenticatable
         );
     }
 
+    public function latestStatus(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->statuses()->latest()->first(),
+        );
+    }
+
+    public function latestTrack(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->tracks()->latest()->first()
+        );
+    }
+
     /**
      * ======================
      * RELATIONSHIPS
@@ -119,6 +133,11 @@ class User extends Authenticatable
         throw new Exception("User is neither brand ambassador or team leader when accessing sales");
     }
 
+    public function tracks()
+    {
+        return $this->hasMany(Track::class, 'brand_ambassador_id');
+    }
+
     /**
      * ======================
      * SCOPES
@@ -126,6 +145,11 @@ class User extends Authenticatable
     public function scopeWithoutTeam(Builder $query)
     {
         return $query->whereDoesntHave('teams');
+    }
+
+    public function scopeWithTeam(Builder $query)
+    {
+        return $query->has('teams');
     }
 
     public function scopeAdmin(Builder $query)
@@ -146,10 +170,5 @@ class User extends Authenticatable
     public function scopeBrandAmbassador(Builder $query)
     {
         return $query->role(self::BRAND_AMBASSADOR);
-    }
-
-    public function latestStatus()
-    {
-        return $this->statuses()->latest()->limit(1);
     }
 }

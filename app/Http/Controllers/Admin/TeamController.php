@@ -45,4 +45,9 @@ class TeamController extends Controller
 
         return redirect()->route('admin.teams.index');
     }
+
+    public function update(Request $request, Team $team)
+    {
+
+    }
 }
