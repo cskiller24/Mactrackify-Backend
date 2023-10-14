@@ -5,5 +5,4 @@
 @section('pre-title', 'Dashboard')
 
 @section('content')
-
 @endsection

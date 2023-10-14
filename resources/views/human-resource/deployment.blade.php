@@ -4,59 +4,149 @@
 
 @section('pre-title', 'Deployment')
 
+@section('content-header')
+    <div class="row">
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="">
+                Total Deployments: {{ $totalDeployments ?? 0 }}
+            </div>
+            <a href="" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#deployment-create-modal">
+                <i class="ti ti-plus icon"></i>
+                Create Deployment for Tommorow ({{ now()->addDay()->toDateString() }})
+            </a>
+        </div>
+    </div>
+@endsection
+
 @section('content')
-<div class="accordion" id="accordionExample">
-    @forelse ($teams as $team)
-    <div class="accordion-item">
-        <h2 class="accordion-header" id="headingOne">
-          <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne{{ $team->id }}" aria-expanded="true" aria-controls="collapseOne{{ $team->id }}">
-            {{ $team->name .' - '. $team->location }}
-          </button>
-        </h2>
-        <div id="collapseOne{{ $team->id }}" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
-            <div class="accordion-body">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">Name</th>
-                            <th scope="col">Status</th>
-                            <th scope="col">Role</th>
-                            <th scope="col">
-                                Actions
-                                <a href="{{ route('human-resource.notification-send-all', $team->id) }}" data-bs-toggle="tooltip" data-bs-placement="top" title="Send all notifications">
-                                    <i class="ti ti-send"></i>
-                                </a>
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($team->users as $user)
-                        <tr>
-                            <td>{{ $user->id }}</td>
-                            <td>{{ $user->full_name }}</td>
-                            <td>@include('human-resource.components.deployment-status', ['status' => $user->latest_status])</td>
-                            <td>@include('components.role-badge', ['user' => $user])</td>
-                            <td>
-                                <form action="" action="POST">
-                                    @csrf
-                                    <a href="{{ route('human-resource.notification-send', $user->id) }}" data-bs-toggle="tooltip" data-bs-placement="top" title="Send notification">
-                                        <i class="ti ti-send"></i>
-                                    </a>
-                                </form>
-                            </td>
-                        </tr>
-                        @empty
+    <div class="border border-dark rounded  bg-light p-2 mb-3">
+        <h1 class="text-center">Deployments for Today</h1>
+        <div class="row mx-1 mb-3">
+        @forelse ($todayDeployments as $team => $data)
+            <div class="col-4 btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#team_{{ $data->first()->team_id }}">
+                {{ $team }}
+            </div>
+        @empty
+            <h2 class="text-center my-2">There are no deployments for today</h2>
+        @endforelse
+        </div>
+    </div>
 
-                        @endforelse
+    <div class="border border-dark rounded  bg-light p-2">
+        <h1 class="text-center">Deployments for Tommorow</h1>
+        <div class="row mx-1 mb-3">
+        @forelse ($tommorowDeployments as $team => $data)
+            <div class="col-4 btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#team_tommorow_{{ $data->first()->team_id }}">
+                {{ $team }}
+            </div>
+        @empty
+            <h2 class="text-center my-2">There are no deployments for tommorow</h2>
+        @endforelse
+        </div>
+    </div>
+@endsection
 
-                    </tbody>
-                </table>
+@section('modals')
+    <div class="modal fade" id="deployment-create-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered ">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Select Team to Create Deployment</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    @foreach ($teams as $team)
+                    <a href="{{ route('human-resource.deployment.create', $team->id) }}" class="btn btn-outline-primary w-100 mb-2 ">{{ $team->name }}</a>
+                    @endforeach
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
             </div>
         </div>
     </div>
-    @empty
-    <h1 class="text-center">No teams</h1>
-    @endforelse
-</div>
+
+    @foreach ($todayDeployments as $team => $deployments)
+    <div class="modal fade" id="team_{{ $deployments->first()->team_id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen modal-dialog-centered ">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Team {{ $team }} Development for Today</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body table table-responsive ">
+                    <table class="table table-striped ">
+                        <thead>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Deployment Status</th>
+                            <th>Deployment Last Update</th>
+                            <th>Actions</th>
+                        </thead>
+                        <tbody>
+                            @foreach ($deployments as $deployment)
+                            <tr>
+                                <td>{{ $deployment->user->full_name }}</td>
+                                <td>{{ $deployment->user->email }}</td>
+                                <td>@include('components.role-badge', ['user' => $deployment->user])</td>
+                                <td>@include('human-resource.components.deployment-status', ['deployment' => $deployment])</td>
+                                <td>{{ $deployment->updated_at->diffForHumans() }}</td>
+                                <td>
+                                    @include('human-resource.components.deployment-action', ['deployment' => $deployment])
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endforeach
+
+    @foreach ($tommorowDeployments as $team => $deployments)
+    <div class="modal fade" id="team_tommorow_{{ $deployments->first()->team_id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen modal-dialog-centered ">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Team {{ $team }} Development for Tommorow</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body table table-responsive ">
+                    <table class="table table-striped ">
+                        <thead>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Deployment Status</th>
+                            <th>Deployment Last Update</th>
+                            <th>Actions</th>
+                        </thead>
+                        <tbody>
+                            @foreach ($deployments as $deployment)
+                            <tr>
+                                <td>{{ $deployment->user->full_name }}</td>
+                                <td>{{ $deployment->user->email }}</td>
+                                <td>@include('components.role-badge', ['user' => $deployment->user])</td>
+                                <td>@include('human-resource.components.deployment-status', ['deployment' => $deployment])</td>
+                                <td>{{ $deployment->updated_at->diffForHumans() }}</td>
+                                <td>
+                                    @include('human-resource.components.deployment-action', ['deployment' => $deployment])
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endforeach
 @endsection

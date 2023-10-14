@@ -3,12 +3,16 @@
 namespace App\Http\Controllers\BrandAmbassador;
 
 use App\Http\Controllers\Controller;
+use App\Models\Deployment;
 use App\Models\Sale;
+use App\Models\Status;
 use App\Models\TaskScheduler;
 use App\Models\Team;
 use App\Models\Track;
+use DB;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use PhpParser\Node\Expr\Cast\Array_;
 
 class BrandAmbassadorController extends Controller
 {
@@ -94,5 +98,32 @@ class BrandAmbassadorController extends Controller
         }
 
         return redirect()->route('brand-ambassador.tracking');
+    }
+
+    public function scheduleIndex()
+    {
+        $todayDeployment = Deployment::today()->whereUserId(auth()->id())->first();
+        $tommorowDeployment = Deployment::tommorow()->whereUserId(auth()->id())->first();
+
+        return view('brand-ambassador.schedule', compact('todayDeployment', 'tommorowDeployment'));
+    }
+
+    public function scheduleUpdate(Request $request, Deployment $deployment)
+    {
+        $request->validate([
+            'status' => ['in:'.Deployment::ACCEPTED.','.Deployment::DECLINED]
+        ]);
+
+        $user = auth()->user();
+
+        $currentStatus = $request->input('status') === Deployment::ACCEPTED ? Status::AVAILABLE : Status::NOT_AVAILABLE;
+        $user->statuses()->create([
+            'status' => $currentStatus,
+        ]);
+        $deployment->update(['status' => $request->input('status')]);
+
+        flash('You have updated your status successfully');
+
+        return redirect()->route('brand-ambassador.schedule');
     }
 }

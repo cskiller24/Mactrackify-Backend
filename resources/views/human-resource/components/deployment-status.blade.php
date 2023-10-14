@@ -1,16 +1,12 @@
-@if($status)
-    @if($status->isDeployed())
-    <span class="badge bg-green">Deployed</span>
+@if($deployment)
+    @if($deployment->isAccepted())
+    <span class="badge bg-green">Accepted</span>
 
-    @elseif ($status->isAvailable())
-    <span class="badge bg-yellow">Not Available</span>
+    @elseif ($deployment->isDeclined())
+    <span class="badge bg-red">Declined</span>
 
-    @elseif($status->isNotAvailable())
-    <span class="badge bg-red">Not Available</span>
-
-    @elseif($status->isPending())
-    <span class="badge bg-primary">Pending</span>
-
+    @elseif($deployment->isNoResponse())
+    <span class="badge bg-yellow">No response</span>
     @endif
 @else
 <span class="badge bg-gray">Unknown</span>

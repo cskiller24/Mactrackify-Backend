@@ -44,6 +44,26 @@ class Team extends Model
         return $this->belongsToMany(User::class, 'teams_users')->withPivot('is_leader');
     }
 
+    public function deployments()
+    {
+        return $this->hasMany(Deployment::class);
+    }
+
+    public function todayDeployments()
+    {
+        return $this->deployments()->where('date', now()->toDateString());
+    }
+
+    public function tommorowDeployments()
+    {
+        return $this->deployments()->where('date', now()->addDay()->toDateString());
+    }
+
+    public function hasDeploymentTommorow(): bool
+    {
+        return $this->deployments()->latest()->first() === now()->addDay()->toDateString();
+    }
+
     public function scopeTeamLeaderWide(Builder $query)
     {
         return $query->whereHas('leaders', function ($q) {

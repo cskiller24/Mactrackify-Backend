@@ -42,7 +42,7 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    public static function rolesList(): array
+        public static function rolesList(): array
     {
         return [
             self::ADMIN,
@@ -103,6 +103,13 @@ class User extends Authenticatable
         );
     }
 
+    public function latestDeployment()
+    {
+        return Attribute::make(
+            get: fn () => $this->deployments()->latest()->first()
+        );
+    }
+
     /**
      * ======================
      * RELATIONSHIPS
@@ -136,6 +143,11 @@ class User extends Authenticatable
     public function tracks()
     {
         return $this->hasMany(Track::class, 'brand_ambassador_id');
+    }
+
+    public function deployments()
+    {
+        return $this->hasMany(Deployment::class);
     }
 
     /**

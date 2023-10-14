@@ -360,7 +360,7 @@
 
                       <td>
                         <p>Hi {{ $user->full_name }}!</p>
-                        <p>We are asking for your availabity tommorrow {{ now()->addDay()->toDateString() }} for deployment.</p>
+                        <p>We are asking for your availabity tommorrow {{ now()->addDay()->toDateString() }} for deployment. You have until {{ now()->toDateString() }} at 12am to respond.</p>
                         <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="btn btn-primary">
                           <tbody>
                             <tr>
@@ -368,10 +368,7 @@
                                 <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                                   <tbody>
                                     <tr>
-                                      <td> <a href="{{ '' }}" target="_blank">Click here accept availability</a> </td>
-                                    </tr>
-                                    <tr>
-                                        <td> <a href="{{ '' }}" target="_blank">Click here decline availability</a> </td>
+                                      <td> <a href="{{ route('schedule') }}" target="_blank">Click here to your status</a> </td>
                                     </tr>
                                   </tbody>
                                 </table>

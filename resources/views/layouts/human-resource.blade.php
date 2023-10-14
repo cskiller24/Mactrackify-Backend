@@ -26,7 +26,7 @@
                             <div class="btn-list">
                                 <div class="dropdown">
                                     <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Hello
-                                        {{ auth()->user()->name ?? 'Admin Name' }}!</a>
+                                        {{ auth()->user()->first_name }}!</a>
                                     <div class="dropdown-menu">
                                         <a class="dropdown-item" href="">Settings</a>
                                         <div class="dropdown-divider"></div>

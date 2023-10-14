@@ -115,7 +115,10 @@ Route::group([
     Route::get('/', [HumanResourceController::class, 'index'])->name('index');
     Route::get('/brand-ambassador', [HumanResourceController::class, 'brandAmbassadorsIndex'])->name('brand-ambassador');
     Route::get('/deployment', [HumanResourceController::class, 'deploymentIndex'])->name('deployment');
-    Route::get('/send-notification/{user}', [HumanResourceController::class, 'sendNotification'])->name('notification-send');
+    Route::get('/deployment/create/{team}', [HumanResourceController::class, 'deploymentCreate'])->name('deployment.create');
+    Route::post('/deployment/create/{team}', [HumanResourceController::class, 'deploymentStore'])->name('deployment.store');
+    Route::get('/send-notification/{deployment}', [HumanResourceController::class, 'sendNotification'])->name('notification-send');
+    Route::get('/send-notification/all/{team}', [HumanResourceController::class, 'sendAllNotification'])->name('notification-send-all');
 });
 
 /**
@@ -138,6 +141,9 @@ Route::group([
     Route::post('/data', [BrandAmbassadorController::class, 'dataStore'])->name('data.store');
     Route::get('/tracking', [BrandAmbassadorController::class, 'trackingIndex'])->name('tracking');
     Route::post('/test-track', [BrandAmbassadorController::class, 'toggleTracking'])->name('test.track');
+    Route::get('/schedule', [BrandAmbassadorController::class, 'scheduleIndex'])->name('schedule');
+    Route::put('/schedule/status/update', [BrandAmbassadorController::class, 'scheduleIndex'])->name('schedule.status.update');
+    Route::put('/schedule/{deployment}', [BrandAmbassadorController::class, 'scheduleUpdate'])->name('schedule.update');
 });
 
 /**
@@ -146,9 +152,9 @@ Route::group([
  */
 
 
-Route::get('/brand-ambassador/schedule', function () {
-    return view('brand-ambassador.schedule');
-})->name('brand-ambassador.schedule');
+// Route::get('/brand-ambassador/schedule', function () {
+//     return view('brand-ambassador.schedule');
+// })->name('brand-ambassador.schedule');
 
 
 Route::get('/download/{path}', function ($path) {
@@ -168,3 +174,23 @@ Route::get('test', function () {
 Route::get('/mail', function () {
     return new SendAvailabilityNotification(auth()->user());
 });
+
+Route::get('/schedule', function () {
+    /** @var User $user */
+    $user = auth()->user();
+
+    if(! $user) {
+        abort(404);
+    }
+
+    if($user->isBrandAmbassador()) {
+        return redirect()->route('brand-ambassador.schedule');
+    }
+
+    if($user->isTeamLeader()) {
+        return redirect('/');
+    }
+
+    flash('You are not brand ambassador or team leader to check availability', 'error');
+    return redirect('/');
+})->name('schedule');
