@@ -117,6 +117,8 @@ Route::group([
     Route::get('/deployment', [HumanResourceController::class, 'deploymentIndex'])->name('deployment');
     Route::get('/deployment/create/{team}', [HumanResourceController::class, 'deploymentCreate'])->name('deployment.create');
     Route::post('/deployment/create/{team}', [HumanResourceController::class, 'deploymentStore'])->name('deployment.store');
+    Route::get('/deployment/{deployment}/recommendations', [HumanResourceController::class, 'deploymentRecommend'])->name('deployment.recommend');
+    Route::post('/deployment/{deployment}/recommendations', [HumanResourceController::class, 'deploymentRecommendStore'])->name('deployment.recommend.store');
     Route::get('/send-notification/{deployment}', [HumanResourceController::class, 'sendNotification'])->name('notification-send');
     Route::get('/send-notification/all/{team}', [HumanResourceController::class, 'sendAllNotification'])->name('notification-send-all');
 });

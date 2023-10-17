@@ -28,6 +28,7 @@
             <h2 class="text-center">You declined the deployment for {{ $type }}. The roster will be replaced by HR.</h2>
         @endif
     @else
+
     <h2 class="text-center my-2">You have no deployment for today. You can still let our HR know that you are available by updating your status.</h2>
     <form class="form-group" action="{{ route('brand-ambassador.schedule.status.update') }}" method="POST">
         @csrf
@@ -35,9 +36,9 @@
         <label for="status" class="form-label">
             Current status
         </label>
-        <select name="status" id="">
+        <select name="status" id="" class="form-select">
             @foreach (\App\Models\Status::listStatuses() as $status)
-                <option value="{{ $status }}" @selected($deployment->user->latestStatus === $status) >{{ str(Status::NOT_AVAILABLE)->title()->replace('_', ' ') }}</option>
+                <option value="{{ $status }}" @selected(auth()->user()->latestStatus->status === $status) >{{ str($status)->title()->replace('_', ' ') }}</option>
             @endforeach
         </select>
     </form>

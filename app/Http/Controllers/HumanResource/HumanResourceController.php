@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Rules\MustBeBrandAmbassador;
 use App\Rules\MustBeTeamLeader;
 use DB;
+use Exception;
 use Illuminate\Http\Request;
 use Log;
 use Mail;
@@ -114,8 +115,36 @@ class HumanResourceController extends Controller
         return redirect()->route('human-resource.deployment');
     }
 
-    public function sendAllNotification(Team $team)
+    public function deploymentRecommend(Deployment $deployment)
     {
+        $team = $deployment->team;
+        $team->load('members');
+        $user = $deployment->user;
 
+        return view('human-resource.deployment-recommend', compact('team', 'user'));
+    }
+
+    public function deploymentRecommendStore(Request $request, Deployment $deployment)
+    {
+        $user = User::query()->find($request->brand_ambassador);
+
+        DB::beginTransaction();
+        try {
+            $newDeployment = Deployment::create([
+                'user_id' => $user->id,
+                'team_id' => $deployment->team_id,
+                'date' => $deployment->date,
+                'status' => Deployment::NO_RESPONSE
+            ]);
+            Mail::to($user->email)->send(new SendAvailabilityNotification($user));
+            $deployment->delete();
+            DB::commit();
+            flash('Successfully replace brand ambassador');
+        } catch (Exception $e) {
+            flash('Something went wrong please try again');
+            DB::rollBack();
+            Log::error($e->getMessage());
+        }
+        return redirect()->route('human-resource.deployment');
     }
 }
