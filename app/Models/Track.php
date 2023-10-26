@@ -17,8 +17,17 @@ class Track extends Model
         'is_authentic',
     ];
 
+    protected $appends = [
+        'createdAtDiff'
+    ];
+
     public function brandAmbassador()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function getCreatedAtDiffAttribute()
+    {
+        return $this->created_at->diffForHumans();
     }
 }

@@ -10,8 +10,10 @@ use App\Http\Controllers\RedirectController;
 use App\Http\Controllers\TeamLeader\TeamLeaderController;
 use App\Mail\InviteCreated;
 use App\Mail\SendAvailabilityNotification;
+use App\Mail\SpoofingMail;
 use App\Models\Sale;
 use App\Models\User;
+use App\Notifications\SpoofingAlertNotification;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
@@ -95,6 +97,8 @@ Route::group([
     Route::get('/data', [TeamLeaderController::class, 'dataIndex'])->name('data');
     Route::post('/data/export', [TeamLeaderController::class, 'dataExport'])->name('data.export');
     Route::get('/tracking', [TeamLeaderController::class, 'trackingIndex'])->name('tracking');
+    Route::get('/tracking/{id}', [TeamLeaderController::class, 'trackingShow'])->name('tracking.show');
+    Route::get('/notifications', [TeamLeaderController::class, 'notificationIndex'])->name('notifications');
 });
 
 /**
@@ -174,7 +178,7 @@ Route::get('test', function () {
 });
 
 Route::get('/mail', function () {
-    return new SendAvailabilityNotification(auth()->user());
+    return new SpoofingMail(auth()->user());
 });
 
 Route::get('/schedule', function () {

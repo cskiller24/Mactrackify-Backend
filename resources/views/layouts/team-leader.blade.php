@@ -21,7 +21,7 @@
                     </div>
                     <!-- Page title actions -->
                     <div class="col-auto ms-auto d-print-none">
-                        <a href="#" class="nav-link mx-3">Notifications</a>
+                        <a href="{{ route('team-leader.notifications') }}" class="nav-link mx-3">Notifications</a>
                     </div>
                     <div class="col-auto ms-auto d-print-none d-none d-lg-flex">
                         <div class="btn-list">

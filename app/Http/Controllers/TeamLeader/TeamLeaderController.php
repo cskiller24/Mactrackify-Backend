@@ -57,6 +57,32 @@ class TeamLeaderController extends Controller
     {
         $team = Team::teamLeaderWide()->with(['members'])->first();
 
-        return view('team-leader.tracking', compact('team'));
+        $tracking = $team->members->map(fn ($user) => $user->latest_track);
+
+        return inertia('Tracking', [
+            'team' => $team,
+            'tracking' => $tracking
+        ]);
+    }
+
+    public function trackingShow($id)
+    {
+        $user = User::query()->findOrFail($id);
+        $user->load(['latestTracking']);
+
+        abort_if(! $user->isBrandAmbassador(), 404);
+
+        return inertia('TrackingDeployee', [
+            'user' => $user
+        ]);
+    }
+
+    public function notificationIndex()
+    {
+        /** @var User $user */
+        $user = auth()->user();
+        $notifications = $user->notifications()->latest()->get();
+
+        return view('team-leader.notifications', compact('notifications'));
     }
 }

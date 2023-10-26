@@ -5,7 +5,11 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\SalesResource;
 use App\Models\Sale;
+use App\Models\Track;
+use App\Notifications\SpoofingAlertNotification;
 use Illuminate\Http\Request;
+use Notification;
+use Symfony\Component\HttpFoundation\Response as ResponseCode;
 
 class BrandAmbassadorController extends Controller
 {
@@ -51,5 +55,26 @@ class BrandAmbassadorController extends Controller
         flash('Sales added succesfully');
 
         return redirect()->route('brand-ambassador.data');
+    }
+
+    public function locationStore(Request $request)
+    {
+        $data = $request->validate([
+            'latitude' => ['required'],
+            'longitude' => ['required'],
+            'is_authentic' => ['required', 'boolean'],
+        ]);
+
+        $data['brand_ambassador_id'] = $request->user()->id;
+        $data['location'] = $request->location ?? null;
+        $user = $request->user();
+        $leaders = $user->teams->first()->leaders;
+        $track = Track::query()->create($data);
+        if(! $data['is_authentic']) {
+            /** @var User $user */
+            Notification::send($leaders, new SpoofingAlertNotification($user, $track));
+        }
+
+        return response()->json(['message' => 'Tracking succesfully created'], ResponseCode::HTTP_CREATED);
     }
 }

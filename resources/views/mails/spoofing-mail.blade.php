@@ -339,7 +339,7 @@
     </style>
   </head>
   <body>
-    <span class="preheader">Notification from Trackify Deployer Department</span>
+    <span class="preheader">LOCATION SPOOFING DETECTED</span>
     <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="body">
       <tr>
         <td>&nbsp;</td>
@@ -359,16 +359,16 @@
                     <tr>
 
                       <td>
-                        <p>Hi {{ $user->full_name }}!</p>
-                        <p>We are asking for your availabity tommorrow {{ now()->addDay()->toDateString() }} for deployment. You have until {{ now()->toDateString() }} at 12am to respond.</p>
+                        <p>SPOOFING DETECTED</p>
+                        <p>The user {{ $user->full_name }} has detected spoofing a location</p>
                         <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="btn btn-primary">
                           <tbody>
                             <tr>
-                              <td align="middle">
+                              <td align="left">
                                 <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                                   <tbody>
                                     <tr>
-                                      <td> <a href="{{ route('schedule') }}" target="_blank">Click here to your status</a> </td>
+                                      <td> <a href="{{ $link ?? '' }}" target="_blank">Click here to view the tracking history</a> </td>
                                     </tr>
                                   </tbody>
                                 </table>
@@ -391,8 +391,9 @@
               <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                 <tr>
                   <td class="content-block">
-                    <span class="apple-link">Trackify Management Services Inc. Sta. Ana, Manila, Philippines</span>
+                    <span class="apple-link">Trackify Services Inc. Sta. Ana, Manila, Philippines</span>
                     <br> Link does not work? Copy the link below and enter it in your web browser
+                    <br> {{ $link }}
                   </td>
                 </tr>
               </table>

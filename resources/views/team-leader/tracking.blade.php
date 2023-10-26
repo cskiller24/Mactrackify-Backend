@@ -10,7 +10,7 @@
         <h1>Live Brand Ambassador Tracking</h1>
     </div>
     <div class="col-12 d-flex justify-content-center">
-        <img src="{{ asset('SampleMap.png') }}" alt="Sample Map" class="border border-2 border-dark">
+        <div id="map" class="h-50 "></div>
     </div>
     <div class="col-12 text-center">
         <p class="h3">Deployed Brand Ambassadors: <b>{{ mt_rand(5, 10) }}</b></p>
@@ -36,7 +36,7 @@
                     <td>{{ $member->latest_track?->latitude ?? 0 }}, {{ $member->latest_track?->longitude ?? 0 }}</td>
                     <td>{{ $member->latest_track?->location ?? 'Unknown' }}</td>
                     <td>@include('team-leader.components.tracking-status', ['tracking' => $member->latest_track])</td>
-                    <td>{{ $member->lastest_track?->created_at?->diffForHumans() ?? 'No date' }}</td>
+                    <td>{{ $member->latest_track?->created_at->diffForHumans() }}</td>
                 </tr>
                 @empty
                     <tr>
@@ -49,4 +49,21 @@
         </table>
     </div>
 </div>
+@endsection
+
+@section('scripts')
+<script>
+    let map;
+
+    async function initMap() {
+        const { Map } = await google.maps.importLibrary("maps");
+
+        map = new Map(document.getElementById("map"), {
+            center: { lat: -34.397, lng: 150.644 },
+            zoom: 8,
+        });
+    }
+
+    initMap();
+</script>
 @endsection

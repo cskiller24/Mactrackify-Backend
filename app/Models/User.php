@@ -42,6 +42,11 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
+    protected $appends = [
+        'latestTrack',
+        'fullName'
+    ];
+
         public static function rolesList(): array
     {
         return [
@@ -103,6 +108,16 @@ class User extends Authenticatable
         );
     }
 
+    public function getLatestTrackAttribute()
+    {
+        return $this->tracks()->latest()->first();
+    }
+
+    public function getFullNameAttribute()
+    {
+        return "{$this->last_name}, {$this->first_name} {$this->middle_name}";
+    }
+
     public function latestDeployment()
     {
         return Attribute::make(
@@ -142,12 +157,17 @@ class User extends Authenticatable
 
     public function tracks()
     {
-        return $this->hasMany(Track::class, 'brand_ambassador_id');
+        return $this->hasMany(Track::class, 'brand_ambassador_id')->latest();
     }
 
     public function deployments()
     {
         return $this->hasMany(Deployment::class);
+    }
+
+    public function latestTracking()
+    {
+        return $this->tracks()->latest();
     }
 
     /**
