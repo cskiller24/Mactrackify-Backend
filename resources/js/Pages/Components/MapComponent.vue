@@ -10,7 +10,6 @@
                 <GMapMarker
                     :key="member.id"
                     :position="{lat: parseFloat(member.latestTrack.latitude), lng: parseFloat(member.latestTrack.longitude)}"
-                    v-for="member in team.members"
                 >
                     <GMapInfoWindow
                         :opened="openedMarker === member.id"

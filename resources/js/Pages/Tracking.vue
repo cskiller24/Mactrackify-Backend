@@ -91,9 +91,8 @@
                                         </th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    <tr v-for="member in team.members" :key="member.id">
-                                        <div v-if="member.hasTrack">
+                               <tbody v-for="member in team.members" :key="member.id">
+                                        <tr v-if="member.hasTrack">
                                             <td>{{ member.id }}</td>
                                             <td ><a :href="`/team-leader/tracking/${member.id}`">{{ member.fullName }}</a></td>
                                             <td @click="toCenter(member)">
@@ -110,8 +109,7 @@
                                                 </div>
                                             </td>
                                             <td>{{ member.latestTrack.createdAtDiff }}</td>
-                                        </div>
-                                    </tr>
+                                        </tr>
                                 </tbody>
                             </table>
                         </div>
