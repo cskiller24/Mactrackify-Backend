@@ -6,7 +6,7 @@
         class="w-100 h-50"
     >
         <div v-for="member in team.members">
-            <div v-if="member.hasTracking">
+            <div v-if="member.hasTrack">
                 <GMapMarker
                     :key="member.id"
                     :position="{lat: parseFloat(member.latestTrack.latitude), lng: parseFloat(member.latestTrack.longitude)}"

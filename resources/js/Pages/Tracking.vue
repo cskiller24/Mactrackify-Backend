@@ -93,7 +93,7 @@
                                 </thead>
                                 <tbody>
                                     <tr v-for="member in team.members" :key="member.id">
-                                        <div v-if="member.hasTracking">
+                                        <div v-if="member.hasTrack">
                                             <td>{{ member.id }}</td>
                                             <td ><a :href="`/team-leader/tracking/${member.id}`">{{ member.fullName }}</a></td>
                                             <td @click="toCenter(member)">
