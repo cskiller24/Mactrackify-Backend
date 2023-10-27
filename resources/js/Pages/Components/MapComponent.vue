@@ -5,23 +5,25 @@
         map-type-id="terrain"
         class="w-100 h-50"
     >
-
-        <GMapMarker
-            :key="member.id"
-            :position="{lat: parseFloat(member.latestTrack.latitude), lng: parseFloat(member.latestTrack.longitude)}"
-            v-for="member in team.members"
-            v-if="hasTracking"
-        >
-            <GMapInfoWindow
-                :opened="openedMarker === member.id"
-            >
-                <div>{{ member.fullName }} {{ new Date(member.latestTrack.created_at).toLocaleString() }}</div>
-            </GMapInfoWindow>
-        </GMapMarker>
+        <div v-for="member in team.members">
+            <div v-if="member.hasTracking">
+                <GMapMarker
+                    :key="member.id"
+                    :position="{lat: parseFloat(member.latestTrack.latitude), lng: parseFloat(member.latestTrack.longitude)}"
+                    v-for="member in team.members"
+                >
+                    <GMapInfoWindow
+                        :opened="openedMarker === member.id"
+                    >
+                        <div>{{ member.fullName }} {{ new Date(member.latestTrack.created_at).toLocaleString() }}</div>
+                    </GMapInfoWindow>
+                </GMapMarker>
+            </div>
+        </div>
     </GMapMap>
 </template>
 <script setup>
 
-defineProps({center: Object, team: Object, openedMarker: Number, hasTracking: Boolean})
+defineProps({center: Object, team: Object, openedMarker: Number})
 
 </script>

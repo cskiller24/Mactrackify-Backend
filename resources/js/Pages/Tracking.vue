@@ -66,7 +66,6 @@
                                 style="height: 30vw;"
                                 :team="team"
                                 :opened-marker="openedMarker"
-                                :has-tracking="hasTracking"
                             />
                         </div>
                         <div class="col-12 text-center">
@@ -93,28 +92,25 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr v-for="member in team.members" :key="member.id" v-if="hasTracking">
-                                        <td>{{ member.id }}</td>
-                                        <td><a :href="`/team-leader/tracking/${member.id}`">{{ member.fullName }}</a></td>
-                                        <td @click="toCenter(member)">
-                                            {{ member.latestTrack.latitude ?? 0 }} | {{ member.latestTrack.longitude ?? 0 }}
-                                            <i class="ti ti-eye-pin"></i>
-                                        </td>
-                                        <td>{{ member.latestTrack.location ?? "No Location" }}</td>
-                                        <td>
-                                            <div v-if="member.latestTrack.is_authentic">
-                                                <span class="badge bg-green" >Genuine</span>
-                                            </div>
-                                            <div v-else>
-                                                <span class="badge bg-red">Spoofed</span>
-                                            </div>
-                                        </td>
-                                        <td>{{ member.latestTrack.createdAtDiff }}</td>
-                                    </tr>
-                                    <tr v-else>
-                                        <td colspan="6">
-                                            <h1 class="text-center">No Tracking Set</h1>
-                                        </td>
+                                    <tr v-for="member in team.members" :key="member.id">
+                                        <div v-if="member.hasTracking">
+                                            <td>{{ member.id }}</td>
+                                            <td ><a :href="`/team-leader/tracking/${member.id}`">{{ member.fullName }}</a></td>
+                                            <td @click="toCenter(member)">
+                                                {{ member.latestTrack.latitude ?? 0 }} | {{ member.latestTrack.longitude ?? 0 }}
+                                                <i class="ti ti-eye-pin"></i>
+                                            </td>
+                                            <td>{{ member.latestTrack.location ?? "No Location" }}</td>
+                                            <td>
+                                                <div v-if="member.latestTrack.is_authentic">
+                                                    <span class="badge bg-green" >Genuine</span>
+                                                </div>
+                                                <div v-else>
+                                                    <span class="badge bg-red">Spoofed</span>
+                                                </div>
+                                            </td>
+                                            <td>{{ member.latestTrack.createdAtDiff }}</td>
+                                        </div>
                                     </tr>
                                 </tbody>
                             </table>
@@ -133,7 +129,7 @@ import TeamLeaderNav from "./Components/TeamLeaderNav.vue";
 import MapComponent from "./Components/MapComponent.vue";
 import { router } from "@inertiajs/vue3";
 
-const props = defineProps({team: Object, hasTracking: Boolean})
+const props = defineProps({team: Object})
 
 const center = ref({lat: 14.58977819216876, lng: 120.98159704631904})
 const openedMarker = ref(null);

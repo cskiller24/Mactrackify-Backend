@@ -44,7 +44,8 @@ class User extends Authenticatable
 
     protected $appends = [
         'latestTrack',
-        'fullName'
+        'fullName',
+        'hasTrack'
     ];
 
         public static function rolesList(): array
@@ -109,6 +110,11 @@ class User extends Authenticatable
     }
 
     public function getLatestTrackAttribute()
+    {
+        return $this->tracks()->latest()->first();
+    }
+
+    public function getHasTrackAttribute()
     {
         return $this->tracks()->latest()->first();
     }
