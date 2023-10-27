@@ -116,7 +116,7 @@ class User extends Authenticatable
 
     public function getHasTrackAttribute()
     {
-        return $this->tracks()->latest()->first();
+        return $this->tracks()->latest()->exists();
     }
 
     public function getFullNameAttribute()
