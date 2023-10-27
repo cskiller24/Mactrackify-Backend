@@ -66,6 +66,7 @@
                                 style="height: 30vw;"
                                 :team="team"
                                 :opened-marker="openedMarker"
+                                :has-tracking="hasTracking"
                             />
                         </div>
                         <div class="col-12 text-center">
@@ -92,11 +93,11 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr v-for="member in team.members" :key="member.id">
+                                    <tr v-for="member in team.members" :key="member.id" v-if="hasTracking">
                                         <td>{{ member.id }}</td>
                                         <td><a :href="`/team-leader/tracking/${member.id}`">{{ member.fullName }}</a></td>
                                         <td @click="toCenter(member)">
-                                            {{ member.latestTrack.latitude }} | {{ member.latestTrack.longitude }}
+                                            {{ member.latestTrack.latitude ?? 0 }} | {{ member.latestTrack.longitude ?? 0 }}
                                             <i class="ti ti-eye-pin"></i>
                                         </td>
                                         <td>{{ member.latestTrack.location ?? "No Location" }}</td>
@@ -110,6 +111,11 @@
                                         </td>
                                         <td>{{ member.latestTrack.createdAtDiff }}</td>
                                     </tr>
+                                    <tr v-else>
+                                        <td colspan="6">
+                                            <h1 class="text-center">No Tracking Set</h1>
+                                        </td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -121,16 +127,17 @@
 </template>
 
 <script setup>
-import { ref } from "vue"
+import { ref, computed } from "vue"
 import { Head } from '@inertiajs/vue3'
 import TeamLeaderNav from "./Components/TeamLeaderNav.vue";
 import MapComponent from "./Components/MapComponent.vue";
 import { router } from "@inertiajs/vue3";
 
-const props = defineProps({team: Object})
+const props = defineProps({team: Object, hasTracking: Boolean})
 
 const center = ref({lat: 14.58977819216876, lng: 120.98159704631904})
 const openedMarker = ref(null);
+
 
 const toCenter = (member) => {
     openedMarker.value = member.id

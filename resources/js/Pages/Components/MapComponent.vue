@@ -5,10 +5,12 @@
         map-type-id="terrain"
         class="w-100 h-50"
     >
+
         <GMapMarker
             :key="member.id"
             :position="{lat: parseFloat(member.latestTrack.latitude), lng: parseFloat(member.latestTrack.longitude)}"
             v-for="member in team.members"
+            v-if="hasTracking"
         >
             <GMapInfoWindow
                 :opened="openedMarker === member.id"
@@ -20,6 +22,6 @@
 </template>
 <script setup>
 
-defineProps({center: Object, team: Object, openedMarker: Number})
+defineProps({center: Object, team: Object, openedMarker: Number, hasTracking: Boolean})
 
 </script>

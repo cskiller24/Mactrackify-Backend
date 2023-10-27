@@ -58,10 +58,18 @@ class TeamLeaderController extends Controller
         $team = Team::teamLeaderWide()->with(['members'])->first();
 
         $tracking = $team->members->map(fn ($user) => $user->latest_track);
+        $hasTracking = true;
+
+        foreach($tracking as $track) {
+            if($track === null) {
+                $hasTracking = false;
+            }
+        }
 
         return inertia('Tracking', [
             'team' => $team,
-            'tracking' => $tracking
+            'tracking' => $tracking,
+            'hasTracking' => $hasTracking
         ]);
     }
 
