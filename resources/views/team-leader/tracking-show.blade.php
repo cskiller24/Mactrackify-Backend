@@ -55,7 +55,7 @@
 $(document).ready(function() {
     var map;
 
-    var apiTracks = '{{ route('api.tracks') }}'
+    var apiTracks = '{{ route('api.tracks.show', $user->id) }}'
 
     async function initMap() {
         const { Map } = await google.maps.importLibrary("maps");
@@ -73,21 +73,29 @@ $(document).ready(function() {
             url : apiTracks,
             method: 'GET',
             success: function (data) {
-                if(!data.length) {
+                console.log(data)
+
+                if(!data.latest_tracking.length) {
                     var tr = $('<tr>');
                     var td = $('<td colspan="6">');
                     var h1 = $('<h1 class="mt-4 text-center">').text('No entries found.');
 
-                    // Build the structure
                     td.append(h1);
                     tr.append(td);
 
-                    // Append to the table body
                     $('#t-body').append(tr);
                 } else {
-                    data.map(function (row) {
-                        renderTableRow(row)
-                        addMarker(map, parseFloat(row.latestTrack.latitude), parseFloat(row.latestTrack.longitude), row.latestTrack.location ?? "Null")
+                    data.latest_tracking.map(function (row) {
+                        renderTableRow({
+                            id: data.id,
+                            fullName: data.fullName,
+                            latitude: row.latitude,
+                            longitude: row.longitude,
+                            location: row.location,
+                            is_authentic: row.is_authentic,
+                            createdAtDiff: row.createdAtDiff
+                        })
+                        addMarker(map, parseFloat(row.latitude), parseFloat(row.longitude), row.location ?? "Null")
                     })
                 }
             }
@@ -110,19 +118,19 @@ $(document).ready(function() {
 
 
     function renderTableRow(data) {
-        var showRoute = '{{ route('team-leader.tracking.show', '') }}'
-        var showRoute2 = showRoute + `/${data.id}`
         const newRow = $('<tr>');
 
+        // Append cells with data
         newRow.append($('<td>').text(data.id));
-        newRow.append($('<td>').html(`<a href="${showRoute2}">` + data.fullName + '</a>'));
-        newRow.append($('<td>').text(data.latestTrack.latitude + ', ' + data.latestTrack.longitude).click(function() {
-            centerMap(data.latestTrack.latitude, data.latestTrack.longitude);
+        newRow.append($('<td>').html('<a href="#">' + data.fullName + '</a>'));
+        newRow.append($('<td>').text(data.latitude + ', ' + data.longitude).click(function() {
+            centerMap(data.latitude, data.longitude);
         }).addClass('cursor-pointer'));
-        newRow.append($('<td>').text(data.latestTrack.location ?? "Null"));
-        newRow.append($('<td>').text(data.latestTrack.is_authentic ? 'Genuine' : 'Spoofed'));
-        newRow.append($('<td>').text(data.latestTrack.createdAtDiff));
+        newRow.append($('<td>').text(data.location ?? "Null"));
+        newRow.append($('<td>').text(data.is_authentic ? 'Genuine' : 'Spoofed'));
+        newRow.append($('<td>').text(data.createdAtDiff));
 
+        // Append the new row to the table
         $('#t-body').append(newRow);
     }
 

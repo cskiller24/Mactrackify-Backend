@@ -245,3 +245,4 @@ Route::get('/pdf2', function() {
 });
 
 Route::get('/tracks', [TeamLeaderController::class, 'apiTracking'])->name('api.tracks');
+Route::get('/tracks/{id}', [TeamLeaderController::class, 'apiShowTracking'])->name('api.tracks.show');

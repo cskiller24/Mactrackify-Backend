@@ -238,6 +238,16 @@ class TeamLeaderController extends Controller
         return response()->json($members);
     }
 
+    public function apiShowTracking($id)
+    {
+        $user = User::query()->findOrFail($id);
+        $user->load(['latestTracking']);
+
+        abort_if(! $user->isBrandAmbassador(), 404);
+
+        return response()->json($user);
+    }
+
     public function trackingShow($id)
     {
         $user = User::query()->findOrFail($id);
@@ -245,9 +255,7 @@ class TeamLeaderController extends Controller
 
         abort_if(! $user->isBrandAmbassador(), 404);
 
-        return inertia('TrackingDeployee', [
-            'user' => $user
-        ]);
+        return view('team-leader.tracking-show', compact('user'));
     }
 
     public function notificationIndex()
