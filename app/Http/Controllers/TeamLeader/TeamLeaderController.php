@@ -220,10 +220,22 @@ class TeamLeaderController extends Controller
 
         $tracking = $team->members->map(fn ($user) => $user->latest_track);
 
-        return inertia('Tracking', [
-            'team' => $team,
-            'tracking' => $tracking,
-        ]);
+        return view('team-leader.tracking', compact('team', 'tracking'));
+    }
+
+    public function apiTracking()
+    {
+        $team = Team::teamLeaderWide()->whereHas('members')->first();
+
+        $members = collect();
+
+        foreach($team->members as $user) {
+            if($user->hasTrack) {
+                $members->add($user);
+            }
+        }
+
+        return response()->json($members);
     }
 
     public function trackingShow($id)

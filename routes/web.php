@@ -244,3 +244,4 @@ Route::get('/pdf2', function() {
     return $pdf->download();
 });
 
+Route::get('/tracks', [TeamLeaderController::class, 'apiTracking'])->name('api.tracks');
