@@ -10,6 +10,7 @@ use App\Models\Team;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Models\WarehouseItem;
+use Barryvdh\DomPDF\Facade\Pdf;
 use DB;
 use Exception;
 use Log;
@@ -170,6 +171,25 @@ class TeamLeaderController extends Controller
         $transaction->update(['status' => 'Released']);
 
         toastr()->success('Transaction release successfully');
+
+        return redirect()->route('team-leader.transactions.show', $transaction->id);
+    }
+
+    public function transactionsReciept(Transaction $transaction)
+    {
+        $totalAmount = 0;
+
+        foreach($transaction->items as $transactionItem) {
+            $totalAmount += $transactionItem->quantity * $transactionItem->warehouseItem->price;
+        }
+        $pdf = Pdf::loadView('pdfs.SalesOrder', ['transaction' => $transaction, 'totalAmount' => $totalAmount]);
+
+        return $pdf->download();
+    }
+
+    public function transactionsComplete(Transaction $transaction)
+    {
+        $transaction->update(['status' => 'Completed']);
 
         return redirect()->route('team-leader.transactions.show', $transaction->id);
     }

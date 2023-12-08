@@ -37,6 +37,24 @@
                     Confirm transaction release
                 </a>
                 @endif
+
+                @if ($transaction->status == 'Released')
+                <form action="{{ route('team-leader.transactions.complete', $transaction->id) }}" method="post" class="col-12 mb-2">
+                    @csrf
+                    <button type="submit" class="btn btn-outline-success w-100 ">
+                        <i class="ti ti-check icon"></i>
+                        Mark as Complete
+                    </button>
+                </form>
+                @endif
+
+                @if ($transaction->status == 'Released' || $transaction->status == 'Completed')
+                <a href="{{ route('team-leader.transactions.receipt', $transaction->id) }}" class="col-12 mb-2 btn btn-outline-primary" >
+                    <i class="ti ti-download icon"></i>
+                    Download Reciept
+                </a>
+                @endif
+
                 <a href="" class="col-12 mb-2 btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#view-payment-history">
                     <i class="ti ti-eye icon"></i>
                     View payment history

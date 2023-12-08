@@ -22,7 +22,7 @@ class WarehouseController extends Controller
     {
         $data = $request->validate([
             'address' => 'required',
-            'name' => 'required'
+            'name' => 'required',
         ]);
 
         Warehouse::query()->create($data);
@@ -37,7 +37,8 @@ class WarehouseController extends Controller
         $data = $request->validate([
             'name' => 'required',
             'quantity' => 'required|numeric|gt:0',
-            'price' => 'required|numeric|gt:0'
+            'price' => 'required|numeric|gt:0',
+            'description' => 'required'
         ]);
 
         $warehouse->items()->create($data);

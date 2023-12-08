@@ -26,6 +26,7 @@
           <tr>
               <th scope="col">#</th>
               <th scope="col">Name</th>
+              <th scope="col">Address</th>
               <th scope="col">Account Number</th>
               <th scope="col">Actions</th>
           </tr>
@@ -35,6 +36,7 @@
             <tr>
                 <td scope="row">{{ $account->id }}</td>
                 <td>{{ $account->name }}</td>
+                <td>{{ $account->address }}</td>
                 <td>{{ $account->number }}</td>
                 <td></td>
             </tr>
@@ -63,6 +65,10 @@
                     <div class="col-12 mb-3">
                         <label for="name" class="form-label">Name</label>
                         <input type="text" name="name" id="name" class="form-control" placeholder="Enter the name">
+                    </div>
+                    <div class="col-12 mb-3">
+                        <label for="address" class="form-label">Address</label>
+                        <input type="text" name="address" id="address" class="form-control" placeholder="Enter the address">
                     </div>
                     <div class="col-12 mb-3">
                         <label for="account_number" class="form-label">Account Number</label>

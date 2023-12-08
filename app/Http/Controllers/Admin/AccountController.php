@@ -21,12 +21,14 @@ class AccountController extends Controller
     {
         $request->validate([
             'name' => 'required',
-            'account_number' => 'required'
+            'account_number' => 'required',
+            'address' => 'required',
         ]);
 
         Account::query()->create([
             'name' => $request->name,
-            'number' => $request->account_number
+            'number' => $request->account_number,
+            'address' => $request->address
         ]);
 
         toastr('Account created successfully');

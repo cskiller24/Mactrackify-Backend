@@ -46,14 +46,16 @@
 <body>
 
 <div class="box">
-<div>Sold To:_____________________________________________</div>
-<div>Date:________________________________________________</div>
-<div>Address:_____________________________________________</div>
-<div>Terms:_______________________________________________</div>
-<div>Bus.Style/Name:______________________________________</div>
-<div>TIN:_________________________________________________</div>
-<div>P.O No:______________________________________________</div>
-<div>Salesman:____________________________________________</div>
+    <div style="display: flex; justify-content: space-between; width: 100%">
+        <div>
+            <div>Sold To: <b>{{ $transaction->account->name }}</b></div>
+            <div>Address: <b>{{ $transaction->account->address }}</b></div>
+        </div>
+        <div>
+            <div>Date: {{ $transaction->created_at->toDateString() }}</div>
+            <div>Salesman: {{ $transaction->user->full_name }}</div>
+        </div>
+    </div>
 
 </div>
 <table>
@@ -67,118 +69,20 @@
         </tr>
     </thead>
     <tbody>
+        @foreach ($transaction->items as $transactionItem)
         <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-
+            <td>{{ $transactionItem->quantity }}</td>
+            <td>{{ $transactionItem->warehouseItem->name }}</td>
+            <td>{{ $transactionItem->warehouseItem->description }}</td>
+            <td>{{ $transactionItem->warehouseItem->price }}</td>
+            <td>{{ $transactionItem->quantity * $transactionItem->warehouseItem->price }}</td>
         </tr>
+        @endforeach
         <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-        </tr>
-            <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-        </tr>
-            <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-        </tr>
-            <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-        </tr>
-            <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-        </tr>
-            <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-        </tr>
-            <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-        </tr>
-            <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-        </tr>
-            <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-        </tr>
-            <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-        </tr>
-            <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-        </tr>
-            <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-        </tr>
-            <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-        </tr>
-            <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-        </tr>
-            <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
+            <td colspan="4" style="background: lightblue; text-align: center">
+                <b>Total Amount</b>
+                </td>
+            <td><b>{{ $totalAmount }}</b></td>
         </tr>
     </tbody>
 </table>

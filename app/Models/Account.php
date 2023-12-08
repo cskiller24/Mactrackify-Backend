@@ -11,7 +11,8 @@ class Account extends Model
 
     protected $fillable = [
         'name',
-        'number'
+        'number',
+        'address'
     ];
 
     public function balances()

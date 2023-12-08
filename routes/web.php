@@ -14,6 +14,7 @@ use App\Mail\InviteCreated;
 use App\Mail\SendAvailabilityNotification;
 use App\Mail\SpoofingMail;
 use App\Models\Sale;
+use App\Models\Transaction;
 use App\Models\User;
 use App\Notifications\SpoofingAlertNotification;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -85,6 +86,7 @@ Route::group([
     Route::post('/items/{warehouseItem}', [WarehouseController::class, 'itemsAdd'])->name('warehouses.items.add');
     Route::get('/accounts', [AccountController::class, 'index'])->name('accounts.index');
     Route::post('/accounts', [AccountController::class, 'store'])->name('accounts.store');
+
 });
 
 /**
@@ -114,6 +116,8 @@ Route::group([
     Route::get('/transactions/{transaction}', [TeamLeaderController::class, 'transactionsShow'])->name('transactions.show');
     Route::post('/transactions/{transaction}/balance', [TeamLeaderController::class, 'transactionsAddBalance'])->name('transactions.addBalance');
     Route::post('/transactions/{transaction}/release', [TeamLeaderController::class, 'transactionsRelease'])->name('transactions.release');
+    Route::get('/transactions/{transaction}/receipt', [TeamLeaderController::class, 'transactionsReciept'])->name('transactions.receipt');
+    Route::post('/transactions/{transaction}/complete', [TeamLeaderController::class, 'transactionsComplete'])->name('transactions.complete');
 });
 
 /**
@@ -217,10 +221,25 @@ Route::get('/schedule', function () {
 })->name('schedule');
 
 Route::get('/pdf', function() {
-    return view('pdfs.invoice');
+    $transaction = Transaction::query()->first();
+
+    $totalAmount = 0;
+
+    foreach($transaction->items as $transactionItem) {
+        $totalAmount += $transactionItem->quantity * $transactionItem->warehouseItem->price;
+    }
+
+    return view('pdfs.SalesOrder', ['transaction' => $transaction, 'totalAmount' => $totalAmount]);
 });
 Route::get('/pdf2', function() {
-    $pdf = Pdf::loadView('pdfs.SalesOrder');
+    $transaction = Transaction::query()->first();
+
+    $totalAmount = 0;
+
+    foreach($transaction->items as $transactionItem) {
+        $totalAmount += $transactionItem->quantity * $transactionItem->warehouseItem->price;
+    }
+    $pdf = Pdf::loadView('pdfs.SalesOrder', ['transaction' => $transaction, 'totalAmount' => $totalAmount]);
 
     return $pdf->download();
 });

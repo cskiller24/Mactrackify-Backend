@@ -44,6 +44,7 @@
                         <tr>
                             <th scope="col">#</th>
                             <th scope="col">Name</th>
+                            <th scope="col">Description</th>
                             <th scope="col">Price</th>
                             <th scope="col">Quantity</th>
                             <th scope="col">Actions</th>
@@ -54,6 +55,7 @@
                             <tr>
                                 <td>{{ $item->id }}</td>
                                 <td>{{ $item->name }}</td>
+                                <td>{{ $item->description }}</td>
                                 <td>{{ $item->price }}</td>
                                 <td>{{ $item->quantity }}</td>
                                 <td>
@@ -124,6 +126,10 @@
                         <input type="text" name="name" id="name" class="form-control" placeholder="Enter the name">
                     </div>
                     <div class="col-12 mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <input type="text" name="description" id="description" class="form-control" placeholder="Enter the description">
+                    </div>
+                    <div class="col-12 mb-3">
                         <label for="price" class="form-label">Price</label>
                         <input type="number" name="price" id="price" class="form-control" placeholder="Enter the quantity">
                     </div>
@@ -131,6 +137,7 @@
                         <label for="quantity" class="form-label">Quantity</label>
                         <input type="text" name="quantity" id="quantity" class="form-control" placeholder="Enter the quantity">
                     </div>
+
                 </div>
             </div>
             <div class="modal-footer">
