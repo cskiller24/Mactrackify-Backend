@@ -30,7 +30,7 @@ $dashboard = [
         </button>
         <h1 class="navbar-brand navbar-brand-autodark">
             <a href="" class="h2">
-                Mactrackify
+                TrackCertify
             </a>
         </h1>
 

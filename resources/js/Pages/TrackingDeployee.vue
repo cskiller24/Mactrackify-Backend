@@ -27,7 +27,7 @@
                                         href="#"
                                         class="nav-link dropdown-toggle"
                                         data-bs-toggle="dropdown"
-                                        >Hello TEAM LEADER !</a
+                                        >Hello Deployer !</a
                                     >
                                     <div class="dropdown-menu">
                                         <a class="dropdown-item" href=""
@@ -57,7 +57,7 @@
                 <div class="container-xl">
                     <div class="row">
                         <div class="col-12 text-center">
-                            <h1>Live Brand Ambassador Tracking</h1>
+                            <h1>Live Deployees Tracking</h1>
                         </div>
                         <div class="col-12 d-flex justify-content-center w-100 ">
                             <DeployeeMapComponent
@@ -69,7 +69,7 @@
                         </div>
                         <div class="col-12 text-center">
                             <p class="h3">
-                                Deployed Brand Ambassadors:
+                                Deployed Deployees:
                                 <!-- <b>{{ mt_rand(5, 10) }}</b> -->
                             </p>
                         </div>
@@ -80,7 +80,7 @@
                                     <tr>
                                         <th scope="col">#</th>
                                         <th scope="col">
-                                            Brand Ambassador Name
+                                            Deployee Name
                                         </th>
                                         <th scope="col">GPS Coordinates</th>
                                         <th scope="col">Location</th>

@@ -1,8 +1,8 @@
 @extends('layouts.human-resource')
 
-@section('title', 'Brand Ambassadors')
+@section('title', 'Deployees')
 
-@section('pre-title', 'Brand Ambassadors')
+@section('pre-title', 'Deployees')
 
 @section('content-header')
 <div class="row">
@@ -12,7 +12,7 @@
 
     <div class="col-6 d-flex justify-content-end align-items-center">
         <div class="fs-3 mx-3">
-            Total Brand Ambassadors: {{ $brandAmbassadors?->count() ?? 0 }}
+            Total Deployees: {{ $brandAmbassadors?->count() ?? 0 }}
         </div>
     </div>
 </div>

@@ -11,9 +11,9 @@
         @csrf
         <input type="hidden" name="team_id" value="{{ $team->id }}">
         <div class="mb-3">
-            <label for="team_leader_id" class="form-label">Team Leader</label>
+            <label for="team_leader_id" class="form-label">Deployer</label>
             <select name="team_leader" id="team_leader" class="form-select">
-                <option value="" selected disabled>-- SELECT TEAM LEADER --</option>
+                <option value="" selected disabled>-- SELECT DEPLOYER --</option>
                 @foreach ($team->leaders as $leader)
                     <option value="{{ $leader->id }}">{{ $leader->full_name }}</option>
                 @endforeach
@@ -21,7 +21,7 @@
         </div>
 
         <div class="row mb-3">
-            <label class="form-label">Select Brand Ambassadors to Deploy</label>
+            <label class="form-label">Select Deployees to Deploy</label>
             @foreach ($team->members as $member)
                 <div class="col-12 col-sm-3 p-2 form-check bg-light mx-1">
                     <input type="checkbox" name="brand_ambassador[]" id="ba_{{ $member->id }}" value="{{ $member->id }}">
