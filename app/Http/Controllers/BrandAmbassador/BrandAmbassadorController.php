@@ -104,7 +104,6 @@ class BrandAmbassadorController extends Controller
     {
         $todayDeployment = Deployment::today()->whereUserId(auth()->id())->first();
         $tommorowDeployment = Deployment::tommorow()->whereUserId(auth()->id())->first();
-        dd($tommorowDeployment);
 
         return view('brand-ambassador.schedule', compact('todayDeployment', 'tommorowDeployment'));
     }
