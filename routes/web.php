@@ -1,8 +1,10 @@
 <?php
 
+use App\Http\Controllers\Admin\AccountController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\InviteController;
 use App\Http\Controllers\Admin\TeamController;
+use App\Http\Controllers\Admin\WarehouseController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BrandAmbassador\BrandAmbassadorController;
 use App\Http\Controllers\HumanResource\HumanResourceController;
@@ -14,6 +16,7 @@ use App\Mail\SpoofingMail;
 use App\Models\Sale;
 use App\Models\User;
 use App\Notifications\SpoofingAlertNotification;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
@@ -75,6 +78,13 @@ Route::group([
 
     Route::get('/teams', [TeamController::class, 'index'])->name('teams.index');
     Route::post('/teams', [TeamController::class, 'store'])->name('teams.store');
+
+    Route::get('/warehouses', [WarehouseController::class, 'index'])->name('warehouses.index');
+    Route::post('/warehouses', [WarehouseController::class, 'store'])->name('warehouses.store');
+    Route::post('/warehouses/{warehouse}/items', [WarehouseController::class, 'itemsStore'])->name('warehouses.items.store');
+    Route::post('/items/{warehouseItem}', [WarehouseController::class, 'itemsAdd'])->name('warehouses.items.add');
+    Route::get('/accounts', [AccountController::class, 'index'])->name('accounts.index');
+    Route::post('/accounts', [AccountController::class, 'store'])->name('accounts.store');
 });
 
 /**
@@ -99,6 +109,11 @@ Route::group([
     Route::get('/tracking', [TeamLeaderController::class, 'trackingIndex'])->name('tracking');
     Route::get('/tracking/{id}', [TeamLeaderController::class, 'trackingShow'])->name('tracking.show');
     Route::get('/notifications', [TeamLeaderController::class, 'notificationIndex'])->name('notifications');
+    Route::get('/transactions/create', [TeamLeaderController::class, 'transactionsCreate'])->name('transactions.create');
+    Route::post('/transactions', [TeamLeaderController::class, 'transactionsStore'])->name('transactions.store');
+    Route::get('/transactions/{transaction}', [TeamLeaderController::class, 'transactionsShow'])->name('transactions.show');
+    Route::post('/transactions/{transaction}/balance', [TeamLeaderController::class, 'transactionsAddBalance'])->name('transactions.addBalance');
+    Route::post('/transactions/{transaction}/release', [TeamLeaderController::class, 'transactionsRelease'])->name('transactions.release');
 });
 
 /**
@@ -200,3 +215,13 @@ Route::get('/schedule', function () {
     flash('You are not brand ambassador or team leader to check availability', 'error');
     return redirect('/');
 })->name('schedule');
+
+Route::get('/pdf', function() {
+    return view('pdfs.invoice');
+});
+Route::get('/pdf2', function() {
+    $pdf = Pdf::loadView('pdfs.SalesOrder');
+
+    return $pdf->download();
+});
+

@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\SalesResource;
+use App\Models\Deployment;
 use App\Models\Sale;
+use App\Models\Status;
 use App\Models\Track;
 use App\Notifications\SpoofingAlertNotification;
 use Illuminate\Http\Request;
@@ -76,5 +78,45 @@ class BrandAmbassadorController extends Controller
         }
 
         return response()->json(['message' => 'Tracking succesfully created'], ResponseCode::HTTP_CREATED);
+    }
+
+    public function scheduling(Request $request)
+    {
+        /** @var User $user */
+        $user = $request->user();
+
+        $deployment = Deployment::tommorow()->whereUserId($user->id)->first();
+
+        if(! $deployment) {
+            return response()->json([
+                'has_deployment' => false,
+                'message' => 'No deployment',
+            ]);
+        }
+
+        return response()->json([
+            'data' => $deployment,
+            'has_deployment' => true,
+            'message' => 'Successfully retrieve deployment'
+        ]);
+    }
+
+    public function schedulingUpdate(Request $request, Deployment $deployment)
+    {
+        $request->validate([
+            'status' => ['in:'.Deployment::ACCEPTED.','.Deployment::DECLINED]
+        ]);
+
+        $user = auth()->user();
+
+        $currentStatus = $request->input('status') === Deployment::ACCEPTED ? Status::AVAILABLE : Status::NOT_AVAILABLE;
+        $user->statuses()->create([
+            'status' => $currentStatus,
+        ]);
+        $deployment->update(['status' => $request->input('status')]);
+
+        return response()->json([
+            'message' => 'Successfully updated scheduling'
+        ]);
     }
 }

@@ -6,7 +6,7 @@
             'link' => route('team-leader.index')
         ],
         [
-            'name' => 'Brand Ambassadors',
+            'name' => 'Deployees',
             'icon' => 'users-group',
             'link' => route('team-leader.brand_ambassadors')
         ],
@@ -30,7 +30,7 @@
         </button>
         <h1 class="navbar-brand navbar-brand-autodark">
             <a href="" class="h2">
-                Mactrackify
+                {{ env('APP_NAME') }}
             </a>
         </h1>
 

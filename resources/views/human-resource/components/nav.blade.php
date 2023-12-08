@@ -25,7 +25,7 @@
         </button>
         <h1 class="navbar-brand navbar-brand-autodark">
             <a href="" class="h2">
-                Mactrackify
+                Trackcertify
             </a>
         </h1>
 

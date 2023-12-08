@@ -28,6 +28,8 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::group(['middleware' => 'role:'.User::BRAND_AMBASSADOR], function () {
         Route::get('/sales', [BrandAmbassadorController::class, 'getSales']);
         Route::post('/tracking', [BrandAmbassadorController::class, 'locationStore']);
+        Route::get('/schedule', [BrandAmbassadorController::class, 'scheduling']);
+        Route::put('/schedule/{deployment}', [BrandAmbassadorController::class, 'schedulingUpdate']);
     });
 });
 

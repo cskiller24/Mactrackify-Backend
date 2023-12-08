@@ -176,6 +176,11 @@ class User extends Authenticatable
         return $this->tracks()->latest();
     }
 
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class);
+    }
+
     /**
      * ======================
      * SCOPES

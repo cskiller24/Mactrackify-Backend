@@ -15,6 +15,16 @@
             'icon' => 'users',
             'link' => route('admin.teams.index')
         ],
+        [
+            'name' => 'Warehouse',
+            'icon' => 'building-warehouse',
+            'link' => route('admin.warehouses.index')
+        ],
+        [
+            'name' => 'Accounts',
+            'icon' => 'credit-card',
+            'link' => route('admin.accounts.index')
+        ]
     ]
 @endphp
 <aside class="navbar navbar-vertical navbar-expand-lg navbar-dark">
@@ -25,7 +35,7 @@
         </button>
         <h1 class="navbar-brand navbar-brand-autodark">
             <a href="{{ route('admin.index') }}" class="h2">
-                Mactrackify
+                Trackcertify
             </a>
         </h1>
 

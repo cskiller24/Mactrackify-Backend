@@ -9,17 +9,16 @@
     <div class="col">
         <x-search />
     </div>
-    <div class="col">
-        <div class="mx-3 d-flex align-items-center">
-            <label for="data-date-range" class="form-label me-2">Range</label>
-            <input type="text" name="daterange" class="form-control daterange" id="data-date-range" autocomplete="off">
-        </div>
-    </div>
 
     <div class="col-6 d-flex justify-content-end align-items-center">
         <div class="fs-3 mx-3">
-            Total Data: <b>{{ $sales->count() ?? 0 }}</b>
+            Total Data: <b>{{ $transactions->count() ?? 0 }}</b>
         </div>
+
+        <a href="{{ route('team-leader.transactions.create') }}" class="btn btn-outline-primary">
+            <i class="ti ti-plus icon"></i>
+            Create Transaction
+        </a>
 
         <form action="{{ route('team-leader.data.export') }}" method="post">
             @csrf
@@ -28,58 +27,48 @@
                 Export to XLXS
             </button>
         </form>
+
     </div>
 </div>
 @endsection
 
 @section('content')
 <div class="table-responsive">
-
     <table class="table table-striped">
         <thead>
             <tr>
-                <th scope="col">#</th>
-                <th scope="col">Customer Name</th>
-                <th scope="col">Customer Contact</th>
-                <th scope="col">Brand Ambassador Name</th>
-                <th scope="col">Product Name</th>
-                <th scope="col">Quantity</th>
-                <th scope="col">Promo</th>
-                <th scope="col">Quantity</th>
+                <th scope="col">Transaction Code</th>
+                <th scope="col">Account Name</th>
+                <th scope="col">Deployee Name</th>
+                <th scope="col">Status</th>
                 <th scope="col">Created at</th>
-                <th scope="col">Signature</th>
             </tr>
         </thead>
         <tbody>
-            @forelse ($sales as $sale)
+            @forelse ($transactions as $transaction)
             <tr>
-                <td>{{ $sale->id }}</td>
-                <td>{{ $sale->customer_name }}</td>
-                <td>{{ $sale->customer_contact }}</td>
-                <td>{{ 'John Doe' }}</td>
-                <td>{{ $sale->product }}</td>
-                <td class="text-center">{{ $sale->product_quantity }}</td>
-                <td>{{ $sale->promo }}</td>
-                <td class="text-center">{{ $sale->promo_quantity }}</td>
-                <td>{{ $sale->created_at->diffForHumans() }}</td>
-                <td class="text-center">
-                    <a href="{{ route('download', $sale->signature_url) }}" target="_blank" data-bs-toggle="tooltip" data-bs-placement="top" title="View Signature">
-                        <i class="ti ti-eye icon" ></i>
-                    </a>
+                <td>
+                    <a href="{{ route('team-leader.transactions.show', $transaction->id) }}">{{ $transaction->uuid }}</a>
                 </td>
+                <td>{{ $transaction->account->name }}</td>
+                <td>{{ $transaction->user->full_name }}</td>
+                <td>{{ $transaction->status }}</td>
+                <td>{{ $transaction->created_at->diffForHumans() }}</td>
+                <td></td>
             </tr>
             @empty
-                <h1>Empty Sales</h1>
+            <tr>
+                <td colspan="5">
+                    <h1 class="mt-4 text-center">No entries found.</h1>
+                </td>
+            </tr>
             @endforelse
         </tbody>
     </table>
 </div>
-
 @endsection
 
 @section('scripts')
 <script>
-    $('#data-date-range').daterangepicker({
-    });
 </script>
 @endsection

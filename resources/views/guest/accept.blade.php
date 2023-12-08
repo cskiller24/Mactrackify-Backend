@@ -8,7 +8,7 @@
         <div class="card card-md">
             <div class="card-body">
                 <h1 class="text-center mb-3">
-                    Mactrackify
+                    Trackcertify
                 </h1>
                 <h2 class="h2 text-center mb-4">Register your account</h2>
                 <form action="{{ route('invites.register', $invite->code) }}" method="POST">

@@ -11,7 +11,7 @@
     <link href="{{ asset('dist/tabler/css/tabler-vendors.min.css') }}" rel="stylesheet">
 
     <title>
-        @yield('title', 'Mactrackify')
+        @yield('title', env('APP_NAME'))
     </title>
 </head>
 

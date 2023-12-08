@@ -1,7 +1,7 @@
 @extends('layouts.guest')
 
 @section('title')
-Login | Mactrackify
+Login | {{ env('APP_NAME') }}
 @endsection
 
 @section('content')
@@ -10,7 +10,7 @@ Login | Mactrackify
         <div class="card card-md">
             <div class="card-body">
                 <h1 class="text-center mb-3">
-                    Mactrackify
+                    {{ env('APP_NAME') }}
                 </h1>
                 <h2 class="h2 text-center mb-4">Login to your account</h2>
                 <form action="{{ route('login') }}" method="POST">

@@ -36,11 +36,12 @@
         <label for="status" class="form-label">
             Current status
         </label>
-        <select name="status" id="" class="form-select">
+        <select name="status" id="" class="form-select mb-2">
             @foreach (\App\Models\Status::listStatuses() as $status)
-                <option value="{{ $status }}" @selected(auth()->user()->latestStatus->status === $status) >{{ str($status)->title()->replace('_', ' ') }}</option>
+                <option value="{{ $status }}" @selected(auth()->user()?->latestStatus?->status === $status) >{{ str($status)->title()->replace('_', ' ') }}</option>
             @endforeach
         </select>
+        <button type="submit" class="btn w-100 btn-outline-primary ">Submit</button>
     </form>
     @endif
 </div>
