@@ -54,25 +54,25 @@ const items = ref([
         id: 1,
         name: "Dashboard",
         icon: "home",
-        link: "/team-leader"
+        link: "/Deployer"
     },
     {
         id: 2,
-        name: "Brand Ambassadors",
+        name: "Deployees",
         icon: "users-group",
-        link: "/team-leader/brand-ambassadors"
+        link: "/Deployer/Deployees"
     },
     {
         id: 3,
         name: "Data",
         icon: "file-info",
-        link: "/team-leader/data"
+        link: "/Deployer/data"
     },
     {
         id: 4,
         name: "Tracking",
         icon: "location-search",
-        link: "/team-leader/tracking"
+        link: "/Deployer/tracking"
     }
 ]);
 </script>

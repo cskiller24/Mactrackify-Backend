@@ -11,7 +11,7 @@
                     <div class="col ms-1">
                         <!-- Page pre-title -->
                         <div class="page-pretitle">
-                            @yield('pre-title', 'Brand Ambassador')
+                            @yield('pre-title', 'Deployees')
                         </div>
                         <h2 class="page-title">
                             @yield('page-title', 'Dashboard')

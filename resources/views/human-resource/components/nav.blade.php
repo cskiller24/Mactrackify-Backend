@@ -6,7 +6,7 @@
             'link' => ''
         ],
         [
-            'name' => 'Brand Ambassadors',
+            'name' => 'Deployees',
             'icon' => 'users-group',
             'link' => route('human-resource.brand-ambassador')
         ],

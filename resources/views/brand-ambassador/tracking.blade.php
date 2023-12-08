@@ -1,6 +1,6 @@
 @extends('layouts.brand-ambassador')
 
-@section('pre-title', 'Brand Ambassador')
+@section('pre-title', 'Deployee')
 
 @section('content-header')
 

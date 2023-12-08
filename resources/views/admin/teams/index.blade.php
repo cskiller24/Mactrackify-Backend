@@ -96,16 +96,16 @@
                         <input type="text" name="location" id="location" class="form-control" placeholder="Enter the location">
                     </div>
                     <div class="col-12 mb-3">
-                        <label for="team_leader" class="form-label">Team Leader</label>
+                        <label for="team_leader" class="form-label">Deployer</label>
                         <select name="team_leader" id="team_leader" class="form-select">
-                            <option value="" selected disabled>-- Select Team Leader --</option>
+                            <option value="" selected disabled>-- Select Deployer --</option>
                             @foreach ($teamLeaderCreate as $teamLeader)
                                 <option value="{{ $teamLeader->id }}">{{ $teamLeader->full_name }}</option>
                             @endforeach
                         </select>
                     </div>
                     <div class="col-12 mb-3">
-                        <label for="ba_select" class="form-label">Brand Ambassadors</label>
+                        <label for="ba_select" class="form-label">Deployee</label>
                         <div class="row">
                             @foreach ($brandAmbassadorCreate as $brandAmbassador)
                             <div class="col-4 d-flex">

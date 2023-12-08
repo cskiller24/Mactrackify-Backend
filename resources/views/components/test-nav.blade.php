@@ -14,7 +14,7 @@ $admin = [
 
 $teamLeader = [
     [
-        'name' => 'Brand Ambassadors',
+        'name' => 'Deployees',
         'icon' => 'users-group',
         'link' => route('team-leader.brand_ambassadors')
     ],
@@ -50,7 +50,7 @@ $brandAmbassador = [
 
 $humanResource = [
         [
-            'name' => 'Brand Ambassadors',
+            'name' => 'Deployees',
             'icon' => 'users-group',
             'link' => route('human-resource.brand-ambassador')
         ],
@@ -105,7 +105,7 @@ $humanResource = [
                 </li>
                 @endforeach
 
-                <div class="hr-text text-light mt-3 mb-1">Team Leader</div>
+                <div class="hr-text text-light mt-3 mb-1">Deployer</div>
                 @foreach ($teamLeader as $item)
                 <li @class(['nav-item', 'active' => route_named($item['link'])])>
                     <a class="nav-link" href="{{ $item['link'] }}">
@@ -119,7 +119,7 @@ $humanResource = [
                 </li>
                 @endforeach
 
-                <div class="hr-text text-light mt-3 mb-1">Brand Ambassador</div>
+                <div class="hr-text text-light mt-3 mb-1">Deployee</div>
                 @foreach ($brandAmbassador as $item)
                 <li @class(['nav-item', 'active' => route_named($item['link'])])>
                     <a class="nav-link" href="{{ $item['link'] }}">

@@ -9,7 +9,7 @@
                 </button>
                 <h1 class="navbar-brand navbar-brand-autodark">
                     <a href="" class="h2">
-                        Mactrackify
+                        TrackCertify
                     </a>
                 </h1>
 
@@ -52,7 +52,7 @@
                     <div class="col ms-1">
                         <!-- Page pre-title -->
                         <div class="page-pretitle">
-                            @yield('pre-title', 'Brand Ambassador')
+                            @yield('pre-title', 'Deployees')
                         </div>
                         <h2 class="page-title">
                             @yield('page-title', 'Dashboard')

@@ -2,7 +2,7 @@
 
 @section('title', 'Scheduled Deployments')
 
-@section('pre-title', 'Brand Ambassador')
+@section('pre-title', 'Deployee')
 
 @section('content')
 

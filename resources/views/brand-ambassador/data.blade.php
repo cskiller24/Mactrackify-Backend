@@ -28,7 +28,7 @@
                 <th scope="col">#</th>
                 <th scope="col">Customer Name</th>
                 <th scope="col">Customer Contact</th>
-                <th scope="col">Brand Ambassador Name</th>
+                <th scope="col">Deployee Name</th>
                 <th scope="col">Product Name</th>
                 <th scope="col">Quantity</th>
                 <th scope="col">Promo</th>
@@ -77,11 +77,11 @@
                     <div class="col-12 mb-3">
                         <input type="hidden" name="team_leader_id" value="{{ $teamLeader->id }}">
                         <input type="hidden" name="team_id" value="{{ $team->id }}">
-                        <label for="team_leader_name" class="form-label">Team Leader Name</label>
+                        <label for="team_leader_name" class="form-label">Deployer Name</label>
                         <input type="text" name="team_leader_name" id="team_leader_name" class="form-control form-disabled" readonly value="{{ $teamLeader->full_name }}">
                     </div>
                     <div class="col-12 mb-3">
-                        <label for="brand_ambassador_name" class="form-label">Brand Ambassador Leader Name</label>
+                        <label for="brand_ambassador_name" class="form-label">Deployee Leader Name</label>
                         <input type="text" name="brand_ambassador_name" id="brand_ambassador_name" class="form-control form-disabled" readonly value="{{ auth()->user()->full_name }}">
                     </div>
                     <div class="col-12 mb-3">
