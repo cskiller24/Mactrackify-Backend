@@ -171,6 +171,37 @@ Route::group([
     Route::put('/schedule/{deployment}', [BrandAmbassadorController::class, 'scheduleUpdate'])->name('schedule.update');
 });
 
+Route::group([
+    'middleware' => ['auth']
+], function () {
+    Route::get('/profile', function () {
+        /** @var User|null $user */
+        $user = auth()->user();
+
+        abort_if(!$user, 404);
+
+        $layout = '';
+
+        if($user->isAdmin()) {
+            $layout = 'admin';
+        }
+
+        if($user->isBrandAmbassador()) {
+            $layout = 'brand-ambassador';
+        }
+
+        if($user->isTeamLeader()) {
+            $layout = 'team-leader';
+        }
+
+        if($user->isHumanResource()) {
+            $layout = 'human-resource';
+        }
+
+        return view('profile', compact('user', 'layout'));
+    });
+});
+
 /**
  * END OF BRAND AMBASSADOR ROUTE
  * ====================================================
