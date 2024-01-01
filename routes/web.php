@@ -79,14 +79,18 @@ Route::group([
 
     Route::get('/teams', [TeamController::class, 'index'])->name('teams.index');
     Route::post('/teams', [TeamController::class, 'store'])->name('teams.store');
+    Route::put('/teams/{team}', [TeamController::class, 'update'])->name('teams.update');
 
     Route::get('/warehouses', [WarehouseController::class, 'index'])->name('warehouses.index');
     Route::post('/warehouses', [WarehouseController::class, 'store'])->name('warehouses.store');
     Route::post('/warehouses/{warehouse}/items', [WarehouseController::class, 'itemsStore'])->name('warehouses.items.store');
     Route::post('/items/{warehouseItem}', [WarehouseController::class, 'itemsAdd'])->name('warehouses.items.add');
+    Route::put('/items/{warehouseItem}', [WarehouseController::class, 'itemsUpdate'])->name('warehouses.items.update');
+
     Route::get('/accounts', [AccountController::class, 'index'])->name('accounts.index');
     Route::post('/accounts', [AccountController::class, 'store'])->name('accounts.store');
-
+    Route::put('/accounts/{account}', [AccountController::class, 'update'])->name('accounts.update');
+    Route::delete('/accounts/{account}', [AccountController::class, 'destroy'])->name('accounts.destroy');
 });
 
 /**

@@ -59,14 +59,17 @@
                                 <td>{{ $item->price }}</td>
                                 <td>{{ $item->quantity }}</td>
                                 <td>
-                                    <a href="#" class="" data-bs-toggle="modal" data-bs-target="#items-add-{{$item->id}}" title="Resend Invitation">
+                                    <a href="#" class="" data-bs-toggle="modal" data-bs-target="#items-add-{{$item->id}}" title="Add stock">
                                         <i class="ti ti-circle-plus icon"></i>
+                                    </a>
+                                    <a href="#" class="" data-bs-toggle="modal" data-bs-target="#items-update-{{$item->id}}" title="Edit Stock">
+                                        <i class="ti ti-pencil icon"></i>
                                     </a>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="4">
+                                <td colspan="6">
                                     <h1 class="mt-4 text-center">No entries found.</h1>
                                 </td>
                             </tr>
@@ -147,6 +150,41 @@
         </form>
     </div>
 </div>
+
+    @foreach ($warehouse->items as $item)
+    <div class="modal fade" id="items-update-{{$item->id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <form class="modal-content" action="{{ route('admin.warehouses.items.update', $item->id) }}" method="POST">
+                @csrf
+                @method('PUT')
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Edit Sales for {{ $item->name }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-12 mb-3">
+                            <label for="name" class="form-label">Name</label>
+                            <input type="text" name="name" id="name" class="form-control" placeholder="Enter the name" value="{{ $item->name }}">
+                        </div>
+                        <div class="col-12 mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <input type="text" name="description" id="description" class="form-control" placeholder="Enter the description" value="{{ $item->description }}">
+                        </div>
+                        <div class="col-12 mb-3">
+                            <label for="price" class="form-label">Price</label>
+                            <input type="number" name="price" id="price" class="form-control" placeholder="Enter the price" value="{{ $item->price }}">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Update</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    @endforeach
 
     @foreach ($warehouse->items as $item)
     <div class="modal fade" id="items-add-{{$item->id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">

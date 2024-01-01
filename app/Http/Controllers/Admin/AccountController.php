@@ -5,14 +5,15 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Account;
 use Illuminate\Http\Request;
+use Illuminate\Notifications\Action;
 
 class AccountController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $total = Account::count();
 
-        $accounts = Account::all();
+        $accounts = Account::search($request->get('search', ''))->get();
 
         return view('admin.accounts.index', compact('total', 'accounts'));
     }
@@ -32,6 +33,32 @@ class AccountController extends Controller
         ]);
 
         toastr('Account created successfully');
+
+        return redirect()->route('admin.accounts.index');
+    }
+
+    public function update(Request $request, Account $account)
+    {
+        $data = $request->validate([
+            'name' => 'required',
+            'account_number' => 'required',
+            'address' => 'required',
+        ]);
+
+        $account->update($data);
+
+        flash('Account deleted successfully');
+
+        return redirect()->route('admin.accounts.index');
+    }
+
+    public function destroy(Account $account)
+    {
+        $account->balances()->delete();
+        $account->transactions()->delete();
+        $account->delete();
+
+        flash('Account deleted successfully');
 
         return redirect()->route('admin.accounts.index');
     }

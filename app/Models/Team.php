@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Scopes\Searchable;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -9,7 +10,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Team extends Model
 {
+    use Searchable;
     use HasFactory;
+
+    protected array $searchable = ['*'];
 
     protected $fillable = ['name', 'location'];
 

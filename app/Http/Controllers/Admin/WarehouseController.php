@@ -9,11 +9,11 @@ use Illuminate\Http\Request;
 
 class WarehouseController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $total = Warehouse::count();
 
-        $warehouses = Warehouse::with('items')->get();
+        $warehouses = Warehouse::with('items')->search($request->get('search', ''))->get();
 
         return view('admin.warehouses.index', compact('total', 'warehouses'));
     }
@@ -60,6 +60,21 @@ class WarehouseController extends Controller
         $warehouseItem->update(['quantity' => $warehouseItem->quantity + $data['quantity']]);
 
         toastr('Item'. $warehouseItem->name .' stocked successfully');
+
+        return redirect()->route('admin.warehouses.index');
+    }
+
+    public function itemsUpdate(Request $request, WarehouseItem $warehouseItem)
+    {
+        $data = $request->validate([
+            'name' => 'required',
+            'price' => 'required|numeric|gt:0',
+            'description' => 'required'
+        ]);
+
+        $warehouseItem->update($data);
+
+        toastr('Item'. $warehouseItem->name .' updated successfully');
 
         return redirect()->route('admin.warehouses.index');
     }
