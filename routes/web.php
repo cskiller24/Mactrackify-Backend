@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\WarehouseController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BrandAmbassador\BrandAmbassadorController;
 use App\Http\Controllers\HumanResource\HumanResourceController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RedirectController;
 use App\Http\Controllers\TeamLeader\TeamLeaderController;
 use App\Mail\InviteCreated;
@@ -166,10 +167,15 @@ Route::group([
     'prefix' => '/brand-ambassador',
 ], function () {
     Route::get('/', [BrandAmbassadorController::class, 'index'])->name('index');
+
     Route::get('/data', [BrandAmbassadorController::class, 'dataIndex'])->name('data');
     Route::post('/data', [BrandAmbassadorController::class, 'dataStore'])->name('data.store');
+    Route::get('/data/create', [BrandAmbassadorController::class, 'dataCreate'])->name('data.create');
+    Route::get('/data/{transaction}', [BrandAmbassadorController::class, 'dataShow'])->name('data.show');
+
     Route::get('/tracking', [BrandAmbassadorController::class, 'trackingIndex'])->name('tracking');
     Route::post('/test-track', [BrandAmbassadorController::class, 'toggleTracking'])->name('test.track');
+
     Route::get('/schedule', [BrandAmbassadorController::class, 'scheduleIndex'])->name('schedule');
     Route::put('/schedule/status/update', [BrandAmbassadorController::class, 'scheduleIndex'])->name('schedule.status.update');
     Route::put('/schedule/{deployment}', [BrandAmbassadorController::class, 'scheduleUpdate'])->name('schedule.update');
@@ -178,32 +184,9 @@ Route::group([
 Route::group([
     'middleware' => ['auth']
 ], function () {
-    Route::get('/profile', function () {
-        /** @var User|null $user */
-        $user = auth()->user();
-
-        abort_if(!$user, 404);
-
-        $layout = '';
-
-        if($user->isAdmin()) {
-            $layout = 'admin';
-        }
-
-        if($user->isBrandAmbassador()) {
-            $layout = 'brand-ambassador';
-        }
-
-        if($user->isTeamLeader()) {
-            $layout = 'team-leader';
-        }
-
-        if($user->isHumanResource()) {
-            $layout = 'human-resource';
-        }
-
-        return view('profile', compact('user', 'layout'));
-    });
+    Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::put('/profile/change-password', [ProfileController::class, 'changePassword'])->name('profile.update.password');
 });
 
 /**

@@ -3,15 +3,22 @@
 namespace App\Http\Controllers\BrandAmbassador;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\TransactionStoreRequest;
+use App\Models\Account;
 use App\Models\Deployment;
 use App\Models\Sale;
 use App\Models\Status;
 use App\Models\TaskScheduler;
 use App\Models\Team;
 use App\Models\Track;
+use App\Models\Transaction;
+use App\Models\WarehouseItem;
 use DB;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
+use Log;
 use PhpParser\Node\Expr\Cast\Array_;
 
 class BrandAmbassadorController extends Controller
@@ -21,45 +28,80 @@ class BrandAmbassadorController extends Controller
         return view('brand-ambassador.index');
     }
 
-    public function dataIndex()
+    public function dataIndex(Request $request)
     {
-        $team = auth()->user()->teams->first();
-        $teamLeader = $team->leaders->first();
-        $sales = Sale::brandAmbassadorWide()->get();
+        $transactions = Transaction::query()
+            ->whereUserId(auth()->id())
+            ->search($request->get('search', ''))
+            ->get();
 
-        return view('brand-ambassador.data', compact('sales', 'teamLeader', 'team'));
+        return view('brand-ambassador.data', compact('transactions'));
     }
 
-    public function dataStore(Request $request)
+    public function dataCreate()
     {
-        $request->validate([
-            'customer_name' => 'required',
-            'customer_contact' => 'required',
-            'customer_age' => 'required|gt:17',
-            'product' => 'required',
-            'product_quantity' => 'required',
-            'promo' => 'required',
-            'promo_quantity' => 'required',
-            'signature' => 'required'
-        ]);
+        $accounts = Account::all();
 
-        $signature = $request->file('signature')->store('', 'customer_images');
+        if($accounts->isEmpty()) {
+            toastr()->warning('There are no registered accounts, please ask the admin for the account');
 
-        Sale::query()->create([
-            'team_id' => $request->input('team_id'),
-            'team_leader_id' => $request->input('team_leader_id'),
-            'brand_ambassador_id' => auth()->id(),
-            'customer_name' => $request->input('customer_name'),
-            'customer_contact' => $request->input('customer_contact'),
-            'customer_age' => $request->input('customer_age'),
-            'product' => $request->input('product'),
-            'product_quantity' => $request->input('product_quantity'),
-            'promo' => $request->input('promo'),
-            'promo_quantity' => $request->input('promo_quantity'),
-            'signature' => $signature
-        ]);
+            return redirect()->route('team-leader.data');
+        }
 
-        flash('Sales added succesfully');
+        $items = WarehouseItem::all();
+
+        if($items->isEmpty()) {
+            toastr()->warning('There are no registered items, please ask the admin for the items');
+
+            return redirect()->route('team-leader.data');
+        }
+
+        return view('brand-ambassador.transactions-create', compact('items', 'accounts'));
+    }
+
+    public function dataStore(TransactionStoreRequest $request)
+    {
+        $request->validated();
+
+        $totals = [];
+
+        foreach ($request->items as $item) {
+            $itemId = $item['item'];
+            $quantity = intval($item['quantity']);
+
+            if (isset($totals[$itemId])) {
+                $totals[$itemId] += $quantity;
+            } else {
+                $totals[$itemId] = $quantity;
+            }
+        }
+
+        try {
+            DB::beginTransaction();
+
+            $transaction = Transaction::query()->create([
+                'uuid' => Str::uuid(),
+                'user_id' => auth()->id(),
+                'status' => 'Pending',
+                'account_id' => $request->input('account_id')
+            ]);
+
+            foreach($totals as $itemId => $quantity) {
+                $transaction->items()->create(['quantity' => $quantity, 'warehouse_item_id' => $itemId]);
+            }
+
+            DB::commit();
+
+            toastr()->success('Transaction created succesfully');
+
+            return redirect()->route('brand-ambassador.data');
+        } catch(Exception $e) {
+            DB::rollBack();
+            Log::error($e->getMessage());
+            toastr()->error('Something went wrong please try again');
+
+            return redirect()->route('brand-ambassador.data.create');
+        }
 
         return redirect()->route('brand-ambassador.data');
     }

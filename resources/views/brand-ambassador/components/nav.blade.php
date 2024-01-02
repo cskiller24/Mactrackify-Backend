@@ -3,7 +3,7 @@ $dashboard = [
     [
         'name' => 'Dashboard',
         'icon' => 'home',
-        'link' => ''
+        'link' => route('brand-ambassador.index')
     ],
     [
         'name' => 'Data',
@@ -29,7 +29,7 @@ $dashboard = [
             <span class="navbar-toggler-icon"></span>
         </button>
         <h1 class="navbar-brand navbar-brand-autodark">
-            <a href="" class="h2">
+            <a href="{{ route('brand-ambassador.index') }}" class="h2">
                 TrackCertify
             </a>
         </h1>

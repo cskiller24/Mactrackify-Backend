@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 
@@ -30,6 +31,7 @@ class User extends Authenticatable
         'last_name',
         'email',
         'password',
+        'profile'
     ];
 
     protected $hidden = [
@@ -48,7 +50,7 @@ class User extends Authenticatable
         'hasTrack'
     ];
 
-        public static function rolesList(): array
+    public static function rolesList(): array
     {
         return [
             self::ADMIN,
@@ -106,6 +108,13 @@ class User extends Authenticatable
     {
         return Attribute::make(
             get: fn () => $this->tracks()->latest()->first()
+        );
+    }
+
+    public function profileLink(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->profile != null ? Storage::disk('public_images')->url($this->profile) : Storage::disk('public_images')->url('default.png')
         );
     }
 

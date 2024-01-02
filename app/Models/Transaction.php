@@ -2,12 +2,23 @@
 
 namespace App\Models;
 
+use App\Models\Scopes\Searchable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Transaction extends Model
 {
     use HasFactory;
+    use Searchable;
+
+    protected array $searchableFields = [
+        'uuid',
+        'account.name',
+        'status',
+        'user.first_name',
+        'user.middle_name',
+        'user.last_name'
+    ];
 
     protected $fillable = [
         'uuid',

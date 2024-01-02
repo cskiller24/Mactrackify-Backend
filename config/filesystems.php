@@ -61,6 +61,14 @@ return [
             'root' => storage_path('app/images/customer'),
             'throw' => false,
             'url' => 'app/images/customer/'
+        ],
+
+        'public_images' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/images'),
+            'url' => env('APP_URL').'/storage/images',
+            'visibility' => 'public',
+            'throw' => false,
         ]
     ],
 
