@@ -114,7 +114,9 @@ class BrandAmbassadorController extends Controller
             ->whereArguments(json_encode(['--user-id' => auth()->id()]))
             ->exists();
 
-        return view('brand-ambassador.tracking', compact('tracks', 'isTracking'));
+        $user = auth()->user();
+
+        return view('brand-ambassador.tracking', compact('tracks', 'isTracking', 'user'));
     }
 
     public function toggleTracking()

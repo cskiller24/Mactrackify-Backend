@@ -80,6 +80,27 @@ class BrandAmbassadorController extends Controller
         return response()->json(['message' => 'Tracking succesfully created'], ResponseCode::HTTP_CREATED);
     }
 
+    public function locationStoreWeb(Request $request)
+    {
+        $data = $request->validate([
+            'latitude' => ['required'],
+            'longitude' => ['required'],
+            'is_authentic' => ['required', 'boolean'],
+        ]);
+
+        $data['brand_ambassador_id'] = auth()->user()->id;
+        $data['location'] = $request->location ?? null;
+        $user = auth()->user();
+        $leaders = $user->teams->first()->leaders;
+        $track = Track::query()->create($data);
+        if(! $data['is_authentic']) {
+            /** @var User $user */
+            Notification::send($leaders, new SpoofingAlertNotification($user, $track));
+        }
+
+        return response()->json(['message' => 'Tracking succesfully created'], ResponseCode::HTTP_CREATED);
+    }
+
     public function scheduling(Request $request)
     {
         /** @var User $user */
