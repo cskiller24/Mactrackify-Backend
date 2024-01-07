@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
+use App\Models\Scopes\Searchable;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -18,12 +19,19 @@ use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable, HasRoles;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles, Searchable;
 
     const ADMIN = 'admin';
     const TEAM_LEADER = 'team_leader';
     const HUMAN_RESOURCE = 'human_resource';
     const BRAND_AMBASSADOR = 'brand_ambassador';
+
+    protected array $searchableFields = [
+        'first_name',
+        'middle_name',
+        'last_name',
+        'email'
+    ];
 
     protected $fillable = [
         'first_name',

@@ -91,6 +91,7 @@ Route::group([
     Route::get('/accounts', [AccountController::class, 'index'])->name('accounts.index');
     Route::post('/accounts', [AccountController::class, 'store'])->name('accounts.store');
     Route::put('/accounts/{account}', [AccountController::class, 'update'])->name('accounts.update');
+    Route::put('/accounts/{account}/add-balance', [AccountController::class, 'addBalance'])->name('accounts.addBalance');
     Route::delete('/accounts/{account}', [AccountController::class, 'destroy'])->name('accounts.destroy');
 });
 

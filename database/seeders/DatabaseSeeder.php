@@ -4,7 +4,10 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
+use App\Models\Account;
 use App\Models\Sale;
+use App\Models\Warehouse;
+use App\Models\WarehouseItem;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -15,6 +18,8 @@ class DatabaseSeeder extends Seeder
         $this->call(UserSeeder::class);
         $this->call(TeamSeeder::class);
 
-        Sale::factory()->count(50)->create();
+        Account::factory()->count(3)->create();
+        Warehouse::factory()->create();
+        WarehouseItem::factory()->count(5)->create();
     }
 }

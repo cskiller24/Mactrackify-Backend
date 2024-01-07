@@ -26,6 +26,7 @@
     <thead>
       <tr>
         <th scope="col">#</th>
+        <th scope="col">User ID</th>
         <th scope="col">Name</th>
         <th scope="col">Email</th>
         <th scope="col">Status</th>
@@ -35,26 +36,31 @@
     </thead>
     <tbody>
         @if ($team)
-        @foreach ($team->members as $user)
-        <tr>
-            <th scope="row">{{ $user->id }}</th>
-            <td>{{ $user->name }}</td>
-            <td>{{ $user->email }}</td>
-            <td>@include('team-leader.components.status', ['status' => $user->latestStatus])</td>
-            <td>{{ $user->sales->count() }}</td>
-        </tr>
-        @endforeach
+        @php
+            $placement = 1;
+        @endphp
+            @foreach ($members as $user)
+            <tr>
+                <td> {{ $placement++ }} </td>
+                <th scope="row">{{ $user->id }}</th>
+                <td>{{ $user->full_name }}</td>
+                <td>{{ $user->email }}</td>
+                <td>@include('team-leader.components.status', ['status' => $user->latestStatus])</td>
+                <td>
+                    <a href="{{ route('team-leader.data', ['user_id' => $user->id]) }}">
+                        {{ $user->transactions->count() }}
+                    </a>
+                </td>
+                <td>
+                    <a href="" title="View last spoofed tracking" >
+                        <i class="ti ti-eye-pin"></i>
+                    </a>
+                </td>
+            </tr>
+            @endforeach
         @else
 
         @endif
-        {{-- <tr>
-            <th scope="row">{{ $i + 1 }}</th>
-            <td>{{ fake()->name() }}</td>
-            <td>{{ fake()->unique()->email() }}</td>
-            <td>@include('team-leader.components.status')</td>
-            <td>{{ mt_rand(100, 1000) }}</td>
-            <td>@include('team-leader.components.actions')</td>
-        </tr> --}}
     </tbody>
   </table>
 @endsection

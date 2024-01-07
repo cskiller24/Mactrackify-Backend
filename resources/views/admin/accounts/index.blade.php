@@ -28,6 +28,7 @@
               <th scope="col">Name</th>
               <th scope="col">Address</th>
               <th scope="col">Account Number</th>
+              <th scope="col">Balance</th>
               <th scope="col">Actions</th>
           </tr>
     </thead>
@@ -38,11 +39,15 @@
                 <td>{{ $account->name }}</td>
                 <td>{{ $account->address }}</td>
                 <td>{{ $account->number }}</td>
+                <td>{{ $account->balance }}</td>
                 <td>
-                    <a href="#" class="" data-bs-toggle="modal" data-bs-target="#edit-account-{{$account->id}}" title="Add stock">
+                    <a href="#" class="" data-bs-toggle="modal" data-bs-target="#edit-account-balance-{{$account->id}}" title="Add Balance">
+                        <i class="ti ti-plus icon"></i>
+                    </a>
+                    <a href="#" class="" data-bs-toggle="modal" data-bs-target="#edit-account-{{$account->id}}" title="Edit Account">
                         <i class="ti ti-pencil icon"></i>
                     </a>
-                    <a href="#" class="" data-bs-toggle="modal" data-bs-target="#delete-account-{{$account->id}}" title="Edit Stock">
+                    <a href="#" class="" data-bs-toggle="modal" data-bs-target="#delete-account-{{$account->id}}" title="Delete Account">
                         <i class="ti ti-trash icon"></i>
                     </a>
                 </td>
@@ -120,6 +125,31 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 <button type="submit" class="btn btn-primary">Update Account</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="modal fade" id="edit-account-balance-{{$account->id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form class="modal-content" action="{{ route('admin.accounts.addBalance', $account->id) }}" method="POST">
+            @csrf
+            @method('PUT')
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Add Balance Account - {{ $account->name }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-12 mb-3">
+                        <label for="balance" class="form-label">Balance</label>
+                        <input type="text" name="balance" id="balance" class="form-control" placeholder="Enter the account balance" value="{{ $account->balance }}">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Add Balance Account</button>
             </div>
         </form>
     </div>

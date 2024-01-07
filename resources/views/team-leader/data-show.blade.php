@@ -26,10 +26,23 @@
             </div>
             <div class="row">
                 @if ($transaction->status == 'Partially Paid' || $transaction->status == 'Pending')
-                <a href="" class="col-12 mb-2 btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#add-payment-modal">
-                    <i class="ti ti-plus icon"></i>
-                    Add payment
-                </a>
+                    @if($transaction->account->hasBalance())
+                        <div class="dropdown">
+                            <a href="#" class="btn dropdown-toggle col-12 mb-2 btn btn-outline-success" data-bs-toggle="dropdown">
+                                <i class="ti ti-plus icon"></i>
+                                Add payment
+                            </a>
+                            <div class="dropdown-menu">
+                            <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#add-payment-modal-using-bank-account">Using bank account balance</a>
+                            <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#add-payment-modal">Direct payment</a>
+                            </div>
+                        </div>
+                    @else
+                    <a href="" class="col-12 mb-2 btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#add-payment-modal">
+                        <i class="ti ti-plus icon"></i>
+                        Add payment
+                    </a>
+                    @endif
                 @endif
                 @if ($transaction->status == 'Fully Paid')
                 <a href="" class="col-12 mb-2 btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#confirm-transaction-release">
@@ -129,13 +142,38 @@
                 <div class="row">
                     <div class="col-12 mb-3">
                         <label for="name" class="form-label">Amount</label>
-                        <input type="number" name="amount" id="amount" class="form-control" placeholder="Enter amount (limit {{ $totalAmount - $paidAmount }})" max="{{ $totalAmount - $paidAmount }}">
+                        <input type="number" name="amount" id="amount" class="form-control" placeholder="Enter amount">
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="submit" class="btn btn-primary">Create Account</button>
+                <button type="submit" class="btn btn-primary">Pay</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="modal fade" id="add-payment-modal-using-bank-account" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form class="modal-content" action="{{ route('team-leader.transactions.addBalance', [$transaction->id, 'bank_account' => true]) }}" method="POST">
+            @csrf
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Add Payment for {{ $transaction->uuid }} using bank account</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-12 mb-3">
+                        <label for="amount" class="form-label">Amount</label>
+                        <input type="number" name="amount" id="amount" class="form-control" placeholder="Enter amount" max="{{ $transaction->account->balance }}">
+                        <small id="amount" class="form-text text-muted">Current Bank Balance: {{ $transaction->account->balance }}</small>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Pay</button>
             </div>
         </form>
     </div>

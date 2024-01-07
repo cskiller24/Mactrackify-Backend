@@ -13,7 +13,18 @@ class Team extends Model
     use Searchable;
     use HasFactory;
 
-    protected array $searchable = ['*'];
+    protected array $searchableFields = [
+        'name',
+        'location',
+        'leaders.first_name',
+        'leaders.middle_name',
+        'leaders.last_name',
+        'leaders.email',
+        'members.first_name',
+        'members.middle_name',
+        'members.last_name',
+        'members.email',
+    ];
 
     protected $fillable = ['name', 'location'];
 

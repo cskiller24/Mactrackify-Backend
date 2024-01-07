@@ -16,16 +16,17 @@ class Account extends Model
     protected $fillable = [
         'name',
         'number',
-        'address'
+        'address',
+        'balance'
     ];
-
-    public function balances()
-    {
-        return $this->hasMany(Balance::class);
-    }
 
     public function transactions()
     {
         return $this->hasMany(Transaction::class);
+    }
+
+    public function hasBalance(): bool
+    {
+        return $this->balance > 0;
     }
 }

@@ -47,7 +47,20 @@ class AccountController extends Controller
 
         $account->update($data);
 
-        flash('Account deleted successfully');
+        flash('Account updated successfully');
+
+        return redirect()->route('admin.accounts.index');
+    }
+
+    public function addBalance(Request $request, Account $account)
+    {
+        $data = $request->validate([
+            'balance' => 'required|numeric',
+        ]);
+
+        $account->update($data);
+
+        flash('Added balance successfully');
 
         return redirect()->route('admin.accounts.index');
     }

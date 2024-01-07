@@ -20,14 +20,6 @@
             Create Transaction
         </a>
 
-        <form action="{{ route('team-leader.data.export') }}" method="post">
-            @csrf
-            <button type="submit" class="btn btn-outline-primary">
-                <i class="ti ti-file-export icon"></i>
-                Export to XLXS
-            </button>
-        </form>
-
     </div>
 </div>
 @endsection

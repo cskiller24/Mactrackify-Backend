@@ -17,6 +17,7 @@ use Log;
 use Rap2hpoutre\FastExcel\FastExcel;
 use Str;
 use Illuminate\Http\Request;
+use Illuminate\Notifications\Action;
 
 class TeamLeaderController extends Controller
 {
@@ -26,18 +27,30 @@ class TeamLeaderController extends Controller
         return view('team-leader.index');
     }
 
-    public function brandAmbassadorsIndex()
+    public function brandAmbassadorsIndex(Request $request)
     {
-        $team = Team::query()->whereHas('leaders', function ($query) {
-            $query->where('users.id', auth()->id());
-        })->with(['members.sales'])->first();
+        $team = Team::query()
+            ->whereHas('leaders', function ($query) {
+                $query->where('users.id', auth()->id());
+            })->with(['members'])->first();
 
-        return view('team-leader.brand-ambassadors', compact('team'));
+        $members = $team->members->pluck('id');
+
+        $members = User::query()
+            ->whereIn('id', $members)
+            ->search($request->get('search', ''))->get();
+
+        return view('team-leader.brand-ambassadors', compact('team', 'members'));
     }
 
-    public function dataIndex()
+    public function dataIndex(Request $request)
     {
-        $transactions = Transaction::all();
+        $transactions = Transaction::query()
+            ->when($request->get('user_id', false), function ($q) use ($request) {
+                $q->where('user_id', $request->get('user_id'));
+            })
+            ->search($request->get('search', ''))
+            ->get();
 
 
         return view('team-leader.data', compact('transactions'));
@@ -135,23 +148,10 @@ class TeamLeaderController extends Controller
             'amount' => 'required|numeric'
         ]);
 
-
-        $totalAmount = 0;
-        $paidAmount = 0;
-
-        foreach($transaction->collectionHistories as $collectionHistory) {
-            $paidAmount += $collectionHistory->balance;
-        }
-
-        foreach($transaction->items as $transactionItem) {
-            $totalAmount += $transactionItem->quantity * $transactionItem->warehouseItem->price;
-        }
-        $transaction->collectionHistories()->create(['balance' => $request->input('amount')]);
-
-        if($totalAmount - $paidAmount - $request->input('amount') == 0) {
-            $transaction->update(['status' => 'Fully Paid']);
+        if($request->get('bank_account', false)) {
+            $this->addBalanceUsingBankAccount($request, $transaction);
         } else {
-            $transaction->update(['status' => 'Partially Paid']);
+            $this->addBalance($request, $transaction);
         }
 
         toastr()->success('Added payment succesfully');
@@ -265,5 +265,82 @@ class TeamLeaderController extends Controller
         $notifications = $user->notifications()->latest()->get();
 
         return view('team-leader.notifications', compact('notifications'));
+    }
+
+    protected function addBalanceUsingBankAccount(Request $request, Transaction $transaction)
+    {
+        if($request->input('amount') > $transaction->account->balance) {
+            toastr()->error('Insufficient bank account balance');
+
+            return redirect()->route('team-leader.transactions.show', $transaction->id);
+        }
+
+        $totalAmount = 0;
+        $paidAmount = 0;
+
+        foreach($transaction->collectionHistories as $collectionHistory) {
+            $paidAmount += $collectionHistory->balance;
+        }
+
+        foreach($transaction->items as $transactionItem) {
+            $totalAmount += $transactionItem->quantity * $transactionItem->warehouseItem->price;
+        }
+
+        $remainingAmount = $totalAmount - $paidAmount;
+        $account = $transaction->account;
+
+
+        if($request->input('amount') - $remainingAmount > 0) {
+            $toAddBalance = $request->input('amount') - $remainingAmount;
+            $account->update(['balance' => $account->balance - $remainingAmount]);
+
+            toastr()->success('The remaining balance '.$toAddBalance.' is automatically added to account balance');
+            $transaction->collectionHistories()->create(['balance' => $remainingAmount]);
+
+            $transaction->update(['status' => 'Fully Paid']);
+
+        } else if($totalAmount - $paidAmount - $request->input('amount') == 0) {
+            $transaction->update(['status' => 'Fully Paid']);
+            $account->update(['balance' => $account->balance - $request->input('amount')]);
+            $transaction->collectionHistories()->create(['balance' => $request->input('amount')]);
+        } else {
+            $transaction->update(['status' => 'Partially Paid']);
+            $account->update(['balance' => $account->balance - $request->input('amount')]);
+            $transaction->collectionHistories()->create(['balance' => $request->input('amount')]);
+        }
+    }
+
+    protected function addBalance(Request $request, Transaction $transaction)
+    {
+        $totalAmount = 0;
+        $paidAmount = 0;
+
+        foreach($transaction->collectionHistories as $collectionHistory) {
+            $paidAmount += $collectionHistory->balance;
+        }
+
+        foreach($transaction->items as $transactionItem) {
+            $totalAmount += $transactionItem->quantity * $transactionItem->warehouseItem->price;
+        }
+
+        if($totalAmount - $paidAmount - $request->input('amount') < 0) {
+            $toAddBalance = $request->input('amount') - ($totalAmount + $paidAmount);
+            $account = $transaction->account;
+            $account->update(['balance' => $account->balance + $toAddBalance]);
+
+            toastr()->success('The remaining balance '.$toAddBalance.' is automatically added to account balance');
+            $transaction->collectionHistories()->create(['balance' => $totalAmount - $paidAmount]);
+
+            $transaction->update(['status' => 'Fully Paid']);
+
+        } else if($totalAmount - $paidAmount - $request->input('amount') == 0) {
+            $transaction->update(['status' => 'Fully Paid']);
+            $transaction->collectionHistories()->create(['balance' => $request->input('amount')]);
+        } else {
+            $transaction->update(['status' => 'Partially Paid']);
+            $transaction->collectionHistories()->create(['balance' => $request->input('amount')]);
+        }
+
+        return true;
     }
 }

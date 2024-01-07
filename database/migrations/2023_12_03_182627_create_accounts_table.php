@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('number');
             $table->text('address');
+            $table->integer('balance')->default(0);
             $table->timestamps();
         });
     }
