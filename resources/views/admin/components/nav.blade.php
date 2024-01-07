@@ -46,7 +46,7 @@
                         Hello {{ auth()->user()->last_name }}!
                     </a>
                     <div class="dropdown-menu">
-                        <a class="dropdown-item" href="">Settings</a>
+                        <a class="dropdown-item" href="{{ route('profile.index') }}">Profile</a>
                         <div class="dropdown-divider"></div>
                         <form action="{{ route('logout') }}" method="post">
                             @csrf
