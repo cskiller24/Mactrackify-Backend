@@ -4,10 +4,12 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\SalesResource;
+use App\Http\Resources\TransactionResource;
 use App\Models\Deployment;
 use App\Models\Sale;
 use App\Models\Status;
 use App\Models\Track;
+use App\Models\Transaction;
 use App\Notifications\SpoofingAlertNotification;
 use Illuminate\Http\Request;
 use Notification;
@@ -139,5 +141,12 @@ class BrandAmbassadorController extends Controller
         return response()->json([
             'message' => 'Successfully updated scheduling'
         ]);
+    }
+
+    public function transactions()
+    {
+        return TransactionResource::collection(
+            Transaction::with(['user', 'items', 'account'])->whereUserId(auth()->id())->get()
+        );
     }
 }

@@ -31,6 +31,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::post('/tracking', [BrandAmbassadorController::class, 'locationStore']);
         Route::get('/schedule', [BrandAmbassadorController::class, 'scheduling']);
         Route::put('/schedule/{deployment}', [BrandAmbassadorController::class, 'schedulingUpdate']);
+        Route::get('/transactions', [BrandAmbassadorController::class, 'transactions']);
     });
 });
 
