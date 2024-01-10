@@ -33,6 +33,8 @@ $dashboard = [
                 TrackCertify
             </a>
         </h1>
+        <div class="hr-text my-0 text-white">ROLE: DEPLOYEE</div>
+
 
         <div class="navbar-nav flex-row d-lg-none">
             <div class="nav-item">

@@ -2,18 +2,26 @@
 
 namespace App\Models;
 
+use App\Models\Scopes\Searchable;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Deployment extends Model
 {
-    use HasFactory, HasUuids;
+    use HasFactory, HasUuids, Searchable;
 
     public const ACCEPTED = 'accepted';
     public const DECLINED = 'declined';
     public const NO_RESPONSE = 'no_response';
 
+    protected $searchableFields = [
+        'user.first_name',
+        'user.middle_name',
+        'user.last_name',
+        'user.email',
+        'team.name'
+    ];
 
     protected $fillable = [
         'user_id',

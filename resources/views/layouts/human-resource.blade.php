@@ -2,8 +2,8 @@
 
 @section('body')
     <div class="page">
-    <!-- Sidebar -->
-    @include('human-resource.components.nav')
+        <!-- Sidebar -->
+        @include('human-resource.components.nav')
         <div class="page-wrapper">
             <!-- Page header -->
             <div class="page-header d-print-none">
@@ -46,7 +46,26 @@
                 <div class="container-xl">
                     <div class="row">
                         <div class="col-12 my-1">
-                            @yield('content-header')
+                            <div class="row align-items-center ">
+                                @if ($hasBack ?? true)
+                                    <div class="col-1">
+                                        <a href="{{ route('human-resource.index') }}" class="nav-link">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="" width="50  "
+                                                height="50" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+                                                fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                                <path d="M12 21a9 9 0 1 0 0 -18a9 9 0 0 0 0 18" />
+                                                <path d="M8 12l4 4" />
+                                                <path d="M8 12h8" />
+                                                <path d="M12 8l-4 4" />
+                                            </svg>
+                                        </a>
+                                    </div>
+                                @endif
+                                <div @class(['col-11' => $hasBack ?? true, 'col-12' => $hasBack ?? false])>
+                                    @yield('content-header')
+                                </div>
+                            </div>
                         </div>
                         <div class="col-12 my-1">
                             @yield('content')

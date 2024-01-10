@@ -5,8 +5,11 @@
 @section('pre-title', 'Deployment')
 
 @section('content-header')
-    <div class="row">
-        <div class="d-flex justify-content-between align-items-center">
+    <div class="row align-items-center ">
+        <div class="col">
+            <x-search />
+        </div>
+        <div class="d-flex col flex-column  align-items-end">
             <div class="">
                 Total Deployments: {{ $totalDeployments ?? 0 }}
             </div>

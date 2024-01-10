@@ -22,7 +22,14 @@ class HumanResourceController extends Controller
 {
     public function index()
     {
-        return view('human-resource.index');
+        $hasBack = false;
+        $teams = DB::table('deployments')->select('team_id')->distinct()->get();
+        $arrayTeams = $teams->map(function ($data) {
+            return $data->team_id;
+        });
+        $teamsDeployedCount = Team::query()->find($arrayTeams)->count();
+        $totalDeployeesCount = User::brandAmbassador()->count();
+        return view('human-resource.index', compact('teamsDeployedCount', 'totalDeployeesCount', 'hasBack'));
     }
 
     public function brandAmbassadorsIndex(Request $request)
@@ -32,15 +39,17 @@ class HumanResourceController extends Controller
         return view('human-resource.brand-ambassador', compact('brandAmbassadors'));
     }
 
-    public function deploymentIndex()
+    public function deploymentIndex(Request $request)
     {
         $teams = Team::all();
 
         $deployments = Deployment::with('team')
+            ->search($request->get('search', ''))
             ->get()
             ->groupBy('date');
+        $totalDeployments = Deployment::count();
 
-        return view('human-resource.deployment', compact('teams', 'deployments'));
+        return view('human-resource.deployment', compact('teams', 'deployments', 'totalDeployments'));
     }
 
     public function deploymentCreate(Team $team)

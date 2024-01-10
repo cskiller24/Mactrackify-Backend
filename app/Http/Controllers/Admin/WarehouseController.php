@@ -11,6 +11,7 @@ class WarehouseController extends Controller
 {
     public function index(Request $request)
     {
+        $hasBack = false;
         $total = Warehouse::count();
 
         $warehouses = Warehouse::with('items')->search($request->get('search', ''))->get();

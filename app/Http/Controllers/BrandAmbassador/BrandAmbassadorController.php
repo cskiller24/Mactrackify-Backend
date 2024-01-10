@@ -16,6 +16,7 @@ use App\Models\WarehouseItem;
 use DB;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Log;
@@ -25,7 +26,16 @@ class BrandAmbassadorController extends Controller
 {
     public function index()
     {
-        return view('brand-ambassador.index');
+        $hasBack = false;
+        $transactionsToday = Transaction::query()->where('user_id', auth()->id())->whereDate('created_at', Carbon::today())->count();
+        $transactionsCount = Transaction::query()->where('user_id', auth()->id())->count();
+        $trackingCount = Track::query()->where('brand_ambassador_id', auth()->id())->whereDate('created_at', Carbon::today())->count();
+        $schedule = Deployment::orderBy('date', 'asc')
+            ->where('user_id', auth()->id())
+            ->where('date', '>', Carbon::today())
+            ->first()?->date ?? 'No upcoming schedules';
+
+        return view('brand-ambassador.index', compact('transactionsToday', 'transactionsCount', 'trackingCount', 'schedule','hasBack'));
     }
 
     public function dataIndex(Request $request)

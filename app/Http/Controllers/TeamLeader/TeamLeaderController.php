@@ -18,13 +18,18 @@ use Rap2hpoutre\FastExcel\FastExcel;
 use Str;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\Action;
+use Illuminate\Support\Carbon;
 
 class TeamLeaderController extends Controller
 {
     public function index()
     {
-
-        return view('team-leader.index');
+        $hasBack = false;
+        $teamName = Team::teamLeaderWide()->first()?->name ?? 'No Current Team';
+        $deployeeCount = Team::with(['members'])->teamLeaderWide()->first()->members->count();
+        $transactionsTodayCount = Transaction::query()->whereDate('created_at', Carbon::today())->count();
+        $transactionsCount = Transaction::count();
+        return view('team-leader.index', compact('hasBack', 'teamName', 'deployeeCount', 'transactionsTodayCount', 'transactionsCount'));
     }
 
     public function brandAmbassadorsIndex(Request $request)
