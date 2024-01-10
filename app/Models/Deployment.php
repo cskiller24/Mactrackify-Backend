@@ -19,7 +19,8 @@ class Deployment extends Model
         'user_id',
         'team_id',
         'status',
-        'date'
+        'date',
+        'replaced'
     ];
 
     public function user()
@@ -42,13 +43,24 @@ class Deployment extends Model
         return $this->query()->where('date', now()->addDay()->toDateString());
     }
 
-    public static function createForUser($user_id, $team_id)
+    public static function createForUser($user_id, $team_id, $date)
     {
         return self::query()->create([
             'user_id' => $user_id,
             'team_id' => $team_id,
             'status' => self::NO_RESPONSE,
+            'date' => $date
         ]);
+    }
+
+    public function isNotReplaced()
+    {
+        return !$this->replaced;
+    }
+
+    public function isReplaced()
+    {
+        return $this->replaced;
     }
 
     public function isAccepted(): bool
@@ -64,14 +76,5 @@ class Deployment extends Model
     public function isNoResponse(): bool
     {
         return $this->status === self::NO_RESPONSE;
-    }
-
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::creating(function ($deployment) {
-            $deployment->date = now()->addDay()->toDateString();
-        });
     }
 }

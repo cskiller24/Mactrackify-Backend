@@ -1,8 +1,5 @@
 @if($status)
-    @if($status->isDeployed())
-    <span class="badge bg-green">Deployed</span>
-
-    @elseif ($status->isAvailable())
+    @if ($status->isAvailable())
     <span class="badge bg-yellow">Available</span>
 
     @elseif($status->isNotAvailable())
@@ -10,8 +7,8 @@
 
     @elseif($status->isPending())
     <span class="badge bg-primary">Pending</span>
-
     @endif
 @else
-<span class="badge bg-gray">Unknown</span>
+
+<span class="badge bg-yellow">No response</span>
 @endif

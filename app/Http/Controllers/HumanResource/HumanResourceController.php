@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\HumanResource;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\DeploymentRequest;
 use App\Mail\SendAvailabilityNotification;
 use App\Models\Deployment;
 use App\Models\Status;
@@ -10,6 +11,7 @@ use App\Models\Team;
 use App\Models\User;
 use App\Rules\MustBeBrandAmbassador;
 use App\Rules\MustBeTeamLeader;
+use Carbon\Carbon;
 use DB;
 use Exception;
 use Illuminate\Http\Request;
@@ -23,9 +25,9 @@ class HumanResourceController extends Controller
         return view('human-resource.index');
     }
 
-    public function brandAmbassadorsIndex()
+    public function brandAmbassadorsIndex(Request $request)
     {
-        $brandAmbassadors = User::brandAmbassador()->get();
+        $brandAmbassadors = User::brandAmbassador()->search($request->get('search', ''))->get();
 
         return view('human-resource.brand-ambassador', compact('brandAmbassadors'));
     }
@@ -34,56 +36,64 @@ class HumanResourceController extends Controller
     {
         $teams = Team::all();
 
-        $todayDeployments = Deployment::today()
-            ->with('team')
+        $deployments = Deployment::with('team')
             ->get()
-            ->groupBy('team.name');
-        $tommorowDeployments = Deployment::tommorow()
-            ->with(['team', 'user'])
-            ->get()
-            ->groupBy('team.name');
+            ->groupBy('date');
 
-        // $todayDeployments = Team::with(['deployments' => fn ($query) => $query->where('date', now()->toDateString())])
-        // ->whereHas('deployments', function ($q) {
-        //     $q->where('date', now()->toDateString());
-        // })->get();
-
-        return view('human-resource.deployment', compact('teams', 'todayDeployments', 'tommorowDeployments'));
+        return view('human-resource.deployment', compact('teams', 'deployments'));
     }
 
     public function deploymentCreate(Team $team)
     {
-        if($team->hasDeploymentTommorow()) {
-            flash("The selected team has already have a deployment today (". now()->toDateString() .").", 'error');
-            return redirect()->back();
-        }
-
         $team->load(['leaders', 'members']);
 
         return view('human-resource.deployment-create', compact('team'));
     }
 
-    public function deploymentStore(Request $request, Team $team)
+    public function deploymentStore(DeploymentRequest $request, Team $team)
     {
-        $data = $request->validate([
-            'team_id' => ['required', 'exists:teams,id'],
-            'team_leader' => ['required', new MustBeTeamLeader],
-            'brand_ambassador' => ['required', 'array'],
-            'brand_ambassador.*' => [new MustBeBrandAmbassador]
-        ]);
+        $data = $request->validated();
+
+        if(Carbon::parse($request->input('date'))->lessThan(Carbon::now()->yesterday())) {
+            toastr()->error('You cannot create a deployment on past dates');
+
+            return redirect()->route('human-resource.deployment.create', $team->id);
+        }
 
         try {
             DB::beginTransaction();
             foreach ($data['brand_ambassador'] as $user) {
-                Deployment::createForUser($user, $team->id);
+                $hasDeployment = Deployment::query()
+                    ->whereUserId($user)
+                    ->whereTeamId($team->id)
+                    ->where('date', $request->input('date'))
+                    ->exists();
+
+                if($hasDeployment) {
+                    continue;
+                }
+
+                $deployment = Deployment::createForUser($user, $team->id, $request->input('date'));
                 $user = User::query()->find($user);
-                Mail::to($user->email)->send(new SendAvailabilityNotification($user));
+                $user->statuses()->create([
+                    'status' => Status::PENDING
+                ]);
+                Mail::to($user->email)->send(new SendAvailabilityNotification($user, $deployment));
             }
 
-            $user = User::query()->find($data['team_leader']);
-            Deployment::createForUser($data['team_leader'], $team->id);
-            Mail::to($user->email)->send(new SendAvailabilityNotification($user));
-
+            $hasDeployment = Deployment::query()
+                ->whereUserId($data['team_leader'])
+                ->whereTeamId($team->id)
+                ->where('date', $request->input('date'))
+                ->exists();
+            if(! $hasDeployment) {
+                $user = User::query()->find($data['team_leader']);
+                $user->statuses()->create([
+                    'status' => Status::PENDING
+                ]);
+                $deployment = Deployment::createForUser($data['team_leader'], $team->id, $request->input('date'));
+                Mail::to($user->email)->send(new SendAvailabilityNotification($user, $deployment));
+            }
             DB::commit();
 
             flash('Deployment for team '.$team->name.' created successfully');
@@ -108,9 +118,33 @@ class HumanResourceController extends Controller
             'status' => Status::PENDING,
         ]);
 
-        Mail::to($user->email)->send(new SendAvailabilityNotification($user));
+        Mail::to($user->email)->send(new SendAvailabilityNotification($user, $deployment));
 
         flash('Notification send succesfully');
+
+        return redirect()->route('human-resource.deployment');
+    }
+
+    public function deploymentReplaceAuto(Deployment $deployment)
+    {
+
+        $team = $deployment->team;
+        $members = $team->members;
+        foreach($members as $user) {
+            if(! $user->hasDeployment($deployment->date)) {
+                $deployment->update(['replaced' => true]);
+                $newDeployment = Deployment::createForUser($user->id, $deployment->team_id, $deployment->date);
+                $user->statuses()->create([
+                    'status' => Status::PENDING
+                ]);
+                Mail::to($user->email)->send(new SendAvailabilityNotification($user, $newDeployment));
+
+                toastr('Automatically replaced deployment successfully');
+                return redirect()->route('human-resource.deployment');
+            }
+        };
+
+        toastr()->info('All of the deployee for '.$deployment->date.' already has deployments');
 
         return redirect()->route('human-resource.deployment');
     }

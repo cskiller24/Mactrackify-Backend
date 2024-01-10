@@ -353,14 +353,14 @@
               <tr>
                 <td class="wrapper">
                 <div class="flexed">
-                    <img src="{{ asset('logo2.png') }}" alt="Logo" width="150" height="100" style="">
+                    <img src="{{ asset('logo3.png') }}" alt="Logo" width="150" height="150" style="">
                 </div>
                   <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                     <tr>
 
                       <td>
                         <p>Hi {{ $user->full_name }}!</p>
-                        <p>We are asking for your availabity tommorrow {{ now()->addDay()->toDateString() }} for deployment. You have until {{ now()->toDateString() }} at 12am to respond.</p>
+                        <p>We are asking for your availabity on {{ $deployment->date }} for deployment.</p>
                         <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="btn btn-primary">
                           <tbody>
                             <tr>
@@ -368,7 +368,7 @@
                                 <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                                   <tbody>
                                     <tr>
-                                      <td> <a href="{{ route('schedule') }}" target="_blank">Click here to your status</a> </td>
+                                      <td> <a href="{{ route('schedule') }}" target="_blank">Click here to view your scheduling status</a> </td>
                                     </tr>
                                   </tbody>
                                 </table>
@@ -391,8 +391,10 @@
               <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                 <tr>
                   <td class="content-block">
-                    <span class="apple-link">Trackify Management Services Inc. Sta. Ana, Manila, Philippines</span>
+                    <span class="apple-link">Trackify Services Inc. PRC, Makati, Philippines</span>
                     <br> Link does not work? Copy the link below and enter it in your web browser
+                    <br>
+                    <a href="">{{ route('schedule') }}</a>
                   </td>
                 </tr>
               </table>

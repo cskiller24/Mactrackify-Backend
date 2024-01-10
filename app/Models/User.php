@@ -148,6 +148,11 @@ class User extends Authenticatable
         );
     }
 
+    public function hasDeployment($date): bool
+    {
+        return Deployment::whereUserId($this->id)->where('date', $date)->exists();
+    }
+
     /**
      * ======================
      * RELATIONSHIPS

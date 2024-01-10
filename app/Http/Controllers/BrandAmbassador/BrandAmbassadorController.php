@@ -146,10 +146,9 @@ class BrandAmbassadorController extends Controller
 
     public function scheduleIndex()
     {
-        $todayDeployment = Deployment::today()->whereUserId(auth()->id())->first();
-        $tommorowDeployment = Deployment::tommorow()->whereUserId(auth()->id())->first();
+        $deployments = Deployment::whereUserId(auth()->id())->latest()->get();
 
-        return view('brand-ambassador.schedule', compact('todayDeployment', 'tommorowDeployment'));
+        return view('brand-ambassador.schedule', compact('deployments'));
     }
 
     public function scheduleUpdate(Request $request, Deployment $deployment)

@@ -12,38 +12,78 @@
             </div>
             <a href="" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#deployment-create-modal">
                 <i class="ti ti-plus icon"></i>
-                Create Deployment for Tommorow ({{ now()->addDay()->toDateString() }})
+                Add Deployment
             </a>
         </div>
     </div>
 @endsection
 
 @section('content')
-    <div class="border border-dark rounded  bg-light p-2 mb-3">
-        <h1 class="text-center">Deployments for Today</h1>
-        <div class="row mx-1 mb-3">
-        @forelse ($todayDeployments as $team => $data)
-            <div class="col-4 btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#team_{{ $data->first()->team_id }}">
-                {{ $team }}
-            </div>
-        @empty
-            <h2 class="text-center my-2">There are no deployments for today</h2>
-        @endforelse
-        </div>
-    </div>
-
-    <div class="border border-dark rounded  bg-light p-2">
-        <h1 class="text-center">Deployments for Tommorow</h1>
-        <div class="row mx-1 mb-3">
-        @forelse ($tommorowDeployments as $team => $data)
-            <div class="col-4 btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#team_tommorow_{{ $data->first()->team_id }}">
-                {{ $team }}
-            </div>
-        @empty
-            <h2 class="text-center my-2">There are no deployments for tommorow</h2>
-        @endforelse
-        </div>
-    </div>
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Team Name</th>
+                <th scope="col">Deployee Name</th>
+                <th scope="col">Role</th>
+                <th scope="col">Last Known Location</th>
+                <th scope="col">Status</th>
+                <th scope="col">Created at</th>
+                <th scope="col">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse ($deployments as $date => $deps)
+            <tr>
+                <td colspan="7" style="background-color: rgb(217, 231, 243);">
+                    <b>{{ $date }}</b>
+                </td>
+            </tr>
+                @foreach ($deps as $deployment)
+                <tr>
+                    <td>
+                        {{ $deployment->team->name }}
+                    </td>
+                    <td>
+                        {{ $deployment->user->full_name }}
+                    </td>
+                    <td>
+                        @include('components.role-badge', ['user' => $deployment->user])
+                    </td>
+                    <td>
+                        {{ $deployment->user->latest_track?->location ?? 'No last location' }}
+                    </td>
+                    <td>
+                        @include('human-resource.components.deployment-status', ['deployment' => $deployment])
+                    </td>
+                    <td>
+                        {{ $deployment->created_at->diffForHumans() }}
+                    </td>
+                    <td>
+                        @if($deployment->isNoResponse())
+                        <a href="{{ route('human-resource.notification-send', $deployment->id) }}" class="" data-bs-toggle="tooltip" data-bs-placement="top" title="Resend Availability">
+                            <i class="ti ti-send icon"></i>
+                        </a>
+                        @endif
+                        @if($deployment->isDeclined() && $deployment->isNotReplaced())
+                        <a href="{{ route('human-resource.deployment.replace-auto', $deployment->id) }}" data-bs-toggle="tooltip" data-bs-placement="top" title="Automatically Replace User">
+                            <i class="ti ti-user-cog icon"></i>
+                        </a>
+                        {{-- <a href="{{ route('human-resource.deployment.replace-auto', $deployment->id) }}" data-bs-toggle="tooltip" data-bs-placement="top" title="Manually Replace User">
+                            <i class="ti ti-user-plus icon"></i>
+                        </a> --}}
+                        @endif
+                    </td>
+                </tr>
+                @endforeach
+            @empty
+            <td colspan="7">
+                <h1 class="text-center">There are no deployments</h1>
+            </td>
+            @endforelse
+        </tbody>
+    </table>
+</div>
 @endsection
 
 @section('modals')
@@ -65,88 +105,4 @@
             </div>
         </div>
     </div>
-
-    @foreach ($todayDeployments as $team => $deployments)
-    <div class="modal fade" id="team_{{ $deployments->first()->team_id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-fullscreen modal-dialog-centered ">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Team {{ $team }} Development for Today</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body table table-responsive ">
-                    <table class="table table-striped ">
-                        <thead>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Role</th>
-                            <th>Deployment Status</th>
-                            <th>Deployment Last Update</th>
-                            <th>Actions</th>
-                        </thead>
-                        <tbody>
-                            @foreach ($deployments as $deployment)
-                            <tr>
-                                <td>{{ $deployment->user->full_name }}</td>
-                                <td>{{ $deployment->user->email }}</td>
-                                <td>@include('components.role-badge', ['user' => $deployment->user])</td>
-                                <td>@include('human-resource.components.deployment-status', ['deployment' => $deployment])</td>
-                                <td>{{ $deployment->updated_at->diffForHumans() }}</td>
-                                <td>
-                                    @include('human-resource.components.deployment-action', ['deployment' => $deployment])
-                                </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    @endforeach
-
-    @foreach ($tommorowDeployments as $team => $deployments)
-    <div class="modal fade" id="team_tommorow_{{ $deployments->first()->team_id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-fullscreen modal-dialog-centered ">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Team {{ $team }} Development for Tommorow</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body table table-responsive ">
-                    <table class="table table-striped ">
-                        <thead>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Role</th>
-                            <th>Deployment Status</th>
-                            <th>Deployment Last Update</th>
-                            <th>Actions</th>
-                        </thead>
-                        <tbody>
-                            @foreach ($deployments as $deployment)
-                            <tr>
-                                <td>{{ $deployment->user->full_name }}</td>
-                                <td>{{ $deployment->user->email }}</td>
-                                <td>@include('components.role-badge', ['user' => $deployment->user])</td>
-                                <td>@include('human-resource.components.deployment-status', ['deployment' => $deployment])</td>
-                                <td>{{ $deployment->updated_at->diffForHumans() }}</td>
-                                <td>
-                                    @include('human-resource.components.deployment-action', ['deployment' => $deployment])
-                                </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    @endforeach
 @endsection

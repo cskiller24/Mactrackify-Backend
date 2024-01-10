@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained();
             $table->string('status');
             $table->date('date');
+            $table->boolean('replaced')->default(false);
             $table->timestamps();
         });
     }

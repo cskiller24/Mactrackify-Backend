@@ -12,7 +12,7 @@
 
     <div class="col-6 d-flex justify-content-end align-items-center">
         <div class="fs-3 mx-3">
-            Total Deployees: {{ $brandAmbassadors?->count() ?? 0 }}
+            Total Deployees: {{ App\Models\User::brandAmbassador()->count() ?? 0 }}
         </div>
     </div>
 </div>
@@ -24,6 +24,7 @@
         <thead>
             <tr>
                 <th scope="col">#</th>
+                <th scope="col">User id</th>
                 <th scope="col">Name</th>
                 <th scope="col">Email</th>
                 <th scope="col">Role</th>
@@ -33,6 +34,7 @@
         <tbody>
             @forelse ($brandAmbassadors as $user)
                 <tr>
+                    <td>{{ $loop->iteration }}</td>
                     <td>{{ $user->id }}</td>
                     <td>{{ $user->full_name }}</td>
                     <td>{{ $user->email }}</td>

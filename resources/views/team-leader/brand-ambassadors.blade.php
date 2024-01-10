@@ -29,23 +29,20 @@
         <th scope="col">User ID</th>
         <th scope="col">Name</th>
         <th scope="col">Email</th>
-        <th scope="col">Status</th>
+        <th scope="col">Latest Deployment Status</th>
         <th scope="col">Submitted Data</th>
         <th scope="col">Actions</th>
       </tr>
     </thead>
     <tbody>
         @if ($team)
-        @php
-            $placement = 1;
-        @endphp
             @foreach ($members as $user)
             <tr>
-                <td> {{ $placement++ }} </td>
+                <td> {{ $loop->iteration }} </td>
                 <th scope="row">{{ $user->id }}</th>
                 <td>{{ $user->full_name }}</td>
                 <td>{{ $user->email }}</td>
-                <td>@include('team-leader.components.status', ['status' => $user->latestStatus])</td>
+                <td>@include('human-resource.components.deployment-status', ['deployment' => $user->deployments()->latest()->first()])</td>
                 <td>
                     <a href="{{ route('team-leader.data', ['user_id' => $user->id]) }}">
                         {{ $user->transactions->count() }}

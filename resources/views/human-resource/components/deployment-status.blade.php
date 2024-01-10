@@ -6,8 +6,9 @@
     <span class="badge bg-red">Declined</span>
 
     @elseif($deployment->isNoResponse())
-    <span class="badge bg-yellow">No response</span>
+    <span class="badge bg-blue">Pending</span>
     @endif
 @else
-<span class="badge bg-gray">Unknown</span>
+<span class="badge bg-yellow">No Response</span>
+
 @endif

@@ -10,7 +10,6 @@ class Status extends Model
 {
     use HasFactory;
 
-    const DEPLOYED = 'deployed';
     const AVAILABLE = 'available';
     const NOT_AVAILABLE = 'not_available';
     const PENDING = 'pending';
@@ -23,7 +22,6 @@ class Status extends Model
     public static function listStatuses()
     {
         return [
-            self::DEPLOYED,
             self::AVAILABLE,
             self::NOT_AVAILABLE,
             self::PENDING
@@ -33,11 +31,6 @@ class Status extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
-    }
-
-    public function isDeployed(): bool
-    {
-        return $this->status === self::DEPLOYED;
     }
 
     public function isAvailable(): bool

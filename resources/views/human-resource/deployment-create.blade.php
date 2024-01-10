@@ -11,6 +11,10 @@
         @csrf
         <input type="hidden" name="team_id" value="{{ $team->id }}">
         <div class="mb-3">
+            <label for="date" class="form-label">Date</label>
+            <input type="date" name="date" id="date" value="{{ date('Y-m-d') }}" class="form-control">
+        </div>
+        <div class="mb-3">
             <label for="team_leader_id" class="form-label">Deployer</label>
             <select name="team_leader" id="team_leader" class="form-select">
                 <option value="" selected disabled>-- SELECT DEPLOYER --</option>
@@ -20,17 +24,17 @@
             </select>
         </div>
 
-        <div class="row mb-3">
-            <label class="form-label">Select Deployees to Deploy</label>
-            @foreach ($team->members as $member)
-                <div class="col-12 col-sm-3 p-2 form-check bg-light mx-1">
-                    <input type="checkbox" name="brand_ambassador[]" id="ba_{{ $member->id }}" value="{{ $member->id }}">
-                    <label for="ba_{{ $member->id }}">
-                        {{ $member->full_name }}
-                    </label>
-                </div>
-            @endforeach
+        @foreach (range(1, 3) as $num)
+        <div class="mb-3">
+            <label for="deployee_{{ $num }}" class="form-label">Deployee {{ $num }}</label>
+            <select name="brand_ambassador[]" class="form-select">
+                <option value="" selected disabled>-- SELECT DEPLOYEE --</option>
+                @foreach($team->members as $member)
+                <option value="{{ $member->id }}">{{ $member->full_name }}</option>
+                @endforeach
+            </select>
         </div>
+        @endforeach
 
         <div class="mb-3">
             <input type="submit" value="Submit" class="btn btn-outline-primary w-100 ">
