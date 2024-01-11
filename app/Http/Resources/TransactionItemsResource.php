@@ -17,7 +17,8 @@ class TransactionItemsResource extends JsonResource
         return [
             'id' => $this->id,
             'quantity' => $this->quantity,
-            'warehouse_name' => $this->warehouseItem->name,
+            'product_name' => $this->warehouseItem->name,
+            'warehouse_name' => $this->warehouseItem->warehouse->name,
             'warehouse_quantity' => $this->warehouseItem->quantity,
             'warehouse_description' => $this->warehouseItem->description,
             'warehouse_price' => $this->warehouseItem->price

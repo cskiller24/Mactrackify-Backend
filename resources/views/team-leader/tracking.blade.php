@@ -54,6 +54,8 @@
 <script>
 $(document).ready(function() {
     var map;
+    var markers = [];
+
 
     var apiTracks = '{{ route('api.tracks') }}'
 
@@ -73,6 +75,7 @@ $(document).ready(function() {
             url : apiTracks,
             method: 'GET',
             success: function (data) {
+                removeMarkers()
                 if(!data.length) {
                     var tr = $('<tr>');
                     var td = $('<td colspan="6">');
@@ -106,6 +109,15 @@ $(document).ready(function() {
             map: map,
             title: title // You can customize the title if needed
         });
+        markers.push(marker)
+    }
+
+    function removeMarkers() {
+        for (let i = 0; i < markers.length; i++) {
+            markers[i].setMap(null);
+        }
+
+        markers = [];
     }
 
 

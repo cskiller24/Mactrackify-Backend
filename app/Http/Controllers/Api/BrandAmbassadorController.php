@@ -3,15 +3,19 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\DeploymentResource;
 use App\Http\Resources\SalesResource;
 use App\Http\Resources\TransactionResource;
+use App\Models\Account;
 use App\Models\Deployment;
 use App\Models\Sale;
 use App\Models\Status;
 use App\Models\Track;
 use App\Models\Transaction;
+use App\Models\WarehouseItem;
 use App\Notifications\SpoofingAlertNotification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Notification;
 use Symfony\Component\HttpFoundation\Response as ResponseCode;
 
@@ -108,19 +112,36 @@ class BrandAmbassadorController extends Controller
         /** @var User $user */
         $user = $request->user();
 
-        $deployment = Deployment::tommorow()->whereUserId($user->id)->first();
+        return DeploymentResource::collection(
+            Deployment::whereUserId($user->id)->get()
+        );
+    }
 
-        if(! $deployment) {
-            return response()->json([
-                'has_deployment' => false,
-                'message' => 'No deployment',
-            ]);
-        }
+    public function schedulingAccept(Deployment $deployment)
+    {
+        $user = auth()->user();
+
+        $user->statuses()->create([
+            'status' => Status::AVAILABLE,
+        ]);
+        $deployment->update(['status' => Deployment::ACCEPTED]);
 
         return response()->json([
-            'data' => $deployment,
-            'has_deployment' => true,
-            'message' => 'Successfully retrieve deployment'
+            'message' => 'Schedule accepted successfully'
+        ]);
+    }
+
+    public function schedulingDecline(Deployment $deployment)
+    {
+        $user = auth()->user();
+
+        $user->statuses()->create([
+            'status' => Status::NOT_AVAILABLE,
+        ]);
+        $deployment->update(['status' => Deployment::DECLINED]);
+
+        return response()->json([
+            'message' => 'Schedule accepted successfully'
         ]);
     }
 
@@ -148,5 +169,66 @@ class BrandAmbassadorController extends Controller
         return TransactionResource::collection(
             Transaction::with(['user', 'items', 'account'])->whereUserId(auth()->id())->get()
         );
+    }
+
+    public function transactionsShow($uuid)
+    {
+        return TransactionResource::make(
+            Transaction::with(['user', 'items', 'account'])->whereUuid($uuid)->firstOrFail()
+        );
+    }
+
+    public function accounts()
+    {
+        return response()->json([
+            'message' => 'Accounts retrieved sucessfully',
+            'data' => Account::all(),
+        ]);
+    }
+
+    public function warehouseItems()
+    {
+        return response()->json([
+            'message' => 'Warehouse retrieved successfully',
+            'data' => WarehouseItem::all()
+        ]);
+    }
+
+    public function transactionsStore(Request $request)
+    {
+        $request->validate([
+            'account_name' => ['required'],
+            'items' => ['required', 'array'],
+            'items.*.product_name' => ['required', 'exists:warehouse_items,name'],
+            'items.*.quantity' => ['required', 'numeric']
+        ]);
+
+        $totals = [];
+
+        foreach ($request->items as $item) {
+            $itemId = $item['product_name'];
+            $quantity = intval($item['quantity']);
+
+            if (isset($totals[$itemId])) {
+                $totals[$itemId] += $quantity;
+            } else {
+                $totals[$itemId] = $quantity;
+            }
+        }
+
+        $transaction = Transaction::query()->create([
+            'uuid' => Str::uuid(),
+            'user_id' => auth()->id(),
+            'status' => 'Pending',
+            'account_id' => Account::query()->where('name', $request->account_name)->first()->id
+        ]);
+
+        foreach($totals as $itemName => $quantity) {
+            $transaction->items()->create(['quantity' => $quantity, 'warehouse_item_id' => WarehouseItem::query()->whereName($itemName)->first()->id]);
+        }
+
+        return response()->json([
+            'message' => 'added successfully'
+        ]);
     }
 }
