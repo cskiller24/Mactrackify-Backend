@@ -29,7 +29,7 @@
     <table class="table table-striped">
         <thead>
             <tr>
-                <th scope="col">Transaction Code</th>
+                <th scope="col">Invoice Number</th>
                 <th scope="col">Account Name</th>
                 <th scope="col">Deployee Name</th>
                 <th scope="col">Status</th>

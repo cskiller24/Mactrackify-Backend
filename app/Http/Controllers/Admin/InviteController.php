@@ -15,10 +15,10 @@ use Symfony\Component\HttpFoundation\Response;
 
 class InviteController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         return view('admin.invites.index', [
-            'invites' => Invite::all()
+            'invites' => Invite::search($request->get('search', ''))->get()
         ]);
     }
 
