@@ -21,6 +21,10 @@ use Symfony\Component\HttpFoundation\Response as ResponseCode;
 
 class BrandAmbassadorController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('throttle')->except('locationStore');
+    }
     public function getSales()
     {
         $sales = Sale::brandAmbassadorWide()->with('brandAmbassador')->latest()->get();

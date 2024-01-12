@@ -22,6 +22,10 @@ use Illuminate\Support\Carbon;
 
 class TeamLeaderController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('throttle')->except(['apiTracking', 'apiShowTracking']);
+    }
     public function index()
     {
         $hasBack = false;
