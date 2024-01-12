@@ -30,7 +30,7 @@
                     <th scope="col">GPS Coordinates</th>
                     <th scope="col">Location</th>
                     <th scope="col">Status</th>
-                    <th scope="col">Location Retrieve At</th>
+                    <th scope="col">Time Stamp</th>
                 </tr>
             </thead>
             <tbody id="t-body">
@@ -75,6 +75,7 @@ $(document).ready(function() {
             url : apiTracks,
             method: 'GET',
             success: function (data) {
+                console.log(data);
                 removeMarkers()
                 if(!data.length) {
                     var tr = $('<tr>');
@@ -88,9 +89,9 @@ $(document).ready(function() {
                     // Append to the table body
                     $('#t-body').append(tr);
                 } else {
-                    data.map(function (row) {
-                        renderTableRow(row)
-                        addMarker(map, parseFloat(row.latestTrack.latitude), parseFloat(row.latestTrack.longitude), row.latestTrack.location ?? "Null")
+                    data.map(function (row, index, array) {
+                        renderTableRow(row, index)
+                        addMarker(map, parseFloat(row.latestTrack.latitude), parseFloat(row.latestTrack.longitude), row.latestTrack.location ?? "Null", row.profile_link)
                     })
                 }
             }
@@ -103,11 +104,18 @@ $(document).ready(function() {
         map.setZoom(14.5)
     }
 
-    function addMarker(map, lat, lng, title) {
+    function addMarker(map, lat, lng, title, profile_link) {
+        const icon = {
+            url: profile_link,
+            scaledSize: new google.maps.Size(75, 75),
+            origin: new google.maps.Point(0,0), // origin
+            anchor: new google.maps.Point(0, 0) // anchor
+        }
         const marker = new google.maps.Marker({
             position: { lat: lat, lng: lng },
             map: map,
-            title: title // You can customize the title if needed
+            title: title, // You can customize the title if needed
+            icon: icon
         });
         markers.push(marker)
     }
@@ -121,19 +129,19 @@ $(document).ready(function() {
     }
 
 
-    function renderTableRow(data) {
+    function renderTableRow(data, index) {
         var showRoute = '{{ route('team-leader.tracking.show', '') }}'
         var showRoute2 = showRoute + `/${data.id}`
         const newRow = $('<tr>');
 
-        newRow.append($('<td>').text(data.id));
+        newRow.append($('<td>').text(index + 1));
         newRow.append($('<td>').html(`<a href="${showRoute2}">` + data.fullName + '</a>'));
         newRow.append($('<td>').text(data.latestTrack.latitude + ', ' + data.latestTrack.longitude).click(function() {
             centerMap(data.latestTrack.latitude, data.latestTrack.longitude);
         }).addClass('cursor-pointer'));
         newRow.append($('<td>').text(data.latestTrack.location ?? "Null"));
         newRow.append($('<td>').text(data.latestTrack.is_authentic ? 'Genuine' : 'Spoofed'));
-        newRow.append($('<td>').text(data.latestTrack.createdAtDiff));
+        newRow.append($('<td>').text(data.latestTrack.createdAtFormatted));
 
         $('#t-body').append(newRow);
     }

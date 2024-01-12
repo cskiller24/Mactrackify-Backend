@@ -49,9 +49,11 @@
                     </a>
                 </td>
                 <td>
-                    <a href="" title="View last spoofed tracking" >
+                    @if($spoof = $user->latestSpoofedTrack)
+                    <a href="{{ route('team-leader.tracking.show', ['track_id' => $spoof->id]) }}" title="View last spoofed tracking" >
                         <i class="ti ti-eye-pin"></i>
                     </a>
+                    @endif
                 </td>
             </tr>
             @endforeach

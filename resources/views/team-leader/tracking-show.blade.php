@@ -15,7 +15,7 @@
 @section('content')
 <div class="row">
     <div class="col-12 text-center">
-        <h1>Live Brand Ambassador Tracking</h1>
+        <h1>Live Tracking</h1>
     </div>
     <div class="col-12 d-flex justify-content-center">
         <div id="map" style="width: 75vw; height: 50vh;"></div>
@@ -85,34 +85,46 @@ $(document).ready(function() {
 
                     $('#t-body').append(tr);
                 } else {
-                    data.latest_tracking.map(function (row) {
+                    data.latest_tracking.map(function (row, index, array) {
                         renderTableRow({
-                            id: data.id,
+                            id: index + 1,
                             fullName: data.fullName,
                             latitude: row.latitude,
                             longitude: row.longitude,
                             location: row.location,
                             is_authentic: row.is_authentic,
-                            createdAtDiff: row.createdAtDiff
+                            createdAtFormatted: row.createdAtFormatted,
+                            profile_link: data.profile_link,
                         })
-                        addMarker(map, parseFloat(row.latitude), parseFloat(row.longitude), row.location ?? "Null")
+                        if(index === 0) {
+                            addMarker(map, parseFloat(row.latitude), parseFloat(row.longitude), row.location ?? "Null", data.profile_link)
+                        }
                     })
                 }
             }
         })
     }
 
-    function centerMap(lat, lng) {
+    function centerMap(lat, lng, location, profile_link) {
         const center = new google.maps.LatLng(lat, lng);
         map.setCenter(center);
-        map.setZoom(14.5)
+        map.setZoom(14.5);
+        removeMarkers();
+        addMarker(map, parseFloat(lat), parseFloat(lng), location, profile_link);
     }
 
-    function addMarker(map, lat, lng, title) {
+    function addMarker(map, lat, lng, title, image) {
+        const icon = {
+            url: image,
+            scaledSize: new google.maps.Size(75, 75),
+            origin: new google.maps.Point(0,0), // origin
+            anchor: new google.maps.Point(0, 0) // anchor
+        }
         const marker = new google.maps.Marker({
             position: { lat: lat, lng: lng },
             map: map,
-            title: title // You can customize the title if needed
+            title: title, // You can customize the title if needed
+            icon: icon
         });
 
         markers.push(marker)
@@ -132,11 +144,11 @@ $(document).ready(function() {
         newRow.append($('<td>').text(data.id));
         newRow.append($('<td>').html('<a href="#">' + data.fullName + '</a>'));
         newRow.append($('<td>').text(data.latitude + ', ' + data.longitude).click(function() {
-            centerMap(data.latitude, data.longitude);
+            centerMap(data.latitude, data.longitude, data.location, data.profile_link);
         }).addClass('cursor-pointer'));
         newRow.append($('<td>').text(data.location ?? "Null"));
         newRow.append($('<td>').text(data.is_authentic ? 'Genuine' : 'Spoofed'));
-        newRow.append($('<td>').text(data.createdAtDiff));
+        newRow.append($('<td>').text(data.createdAtFormatted));
 
         // Append the new row to the table
         $('#t-body').append(newRow);

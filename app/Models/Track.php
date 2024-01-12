@@ -18,7 +18,8 @@ class Track extends Model
     ];
 
     protected $appends = [
-        'createdAtDiff'
+        'createdAtDiff',
+        'createdAtFormatted'
     ];
 
     public function brandAmbassador()
@@ -29,5 +30,9 @@ class Track extends Model
     public function getCreatedAtDiffAttribute()
     {
         return $this->created_at->diffForHumans();
+    }
+
+    public function getCreatedAtFormattedAttribute() {
+        return $this->created_at->toDateTimeString();
     }
 }

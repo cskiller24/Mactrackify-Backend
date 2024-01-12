@@ -247,9 +247,15 @@ Route::get('/pdf', function() {
     foreach($transaction->items as $transactionItem) {
         $totalAmount += $transactionItem->quantity * $transactionItem->warehouseItem->price;
     }
+    $emptyCount = 20 - $transaction->items->count();
+    if($emptyCount < 0) {
+        $emptyCount = 0;
+    }
 
-    return view('pdfs.SalesOrder', ['transaction' => $transaction, 'totalAmount' => $totalAmount]);
-});
+    $deployer = $transaction->user->teams->first()->leaders->first();
+
+    return view('pdfs.SalesOrder', ['transaction' => $transaction, 'totalAmount' => $totalAmount, 'emptyCount' => $emptyCount, 'deployer' => $deployer]);
+});  
 Route::get('/pdf2', function() {
     $transaction = Transaction::query()->first();
 

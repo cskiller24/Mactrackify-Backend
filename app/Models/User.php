@@ -55,7 +55,8 @@ class User extends Authenticatable
     protected $appends = [
         'latestTrack',
         'fullName',
-        'hasTrack'
+        'hasTrack',
+        'profile_link'
     ];
 
     public static function rolesList(): array
@@ -129,6 +130,11 @@ class User extends Authenticatable
     public function getLatestTrackAttribute()
     {
         return $this->tracks()->latest()->first();
+    }
+
+    public function getLatestSpoofedTrackAttribute() 
+    {
+        return $this->tracks()->where('is_authentic', false)->latest()->first();
     }
 
     public function getHasTrackAttribute()

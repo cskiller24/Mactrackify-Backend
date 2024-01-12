@@ -56,7 +56,6 @@
             <div>Salesman: {{ $transaction->user->full_name }}</div>
         </div>
     </div>
-
 </div>
 <table>
     <thead>
@@ -78,6 +77,17 @@
             <td>{{ $transactionItem->quantity * $transactionItem->warehouseItem->price }}</td>
         </tr>
         @endforeach
+
+        @for($i = 0; $i < $emptyCount; $i++)
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        @endfor
+        
         <tr>
             <td colspan="4" style="background: lightblue; text-align: center">
                 <b>Total Amount</b>
@@ -86,6 +96,20 @@
         </tr>
     </tbody>
 </table>
+
+<div class="box">
+    <div style="display: flex; justify-content: space-between; width: 100%">
+        <div>
+            <div>Prepared By: <u><b>{{ $transaction->user->full_name }}</b></u></div>
+        </div>
+        <div>
+            <div>Checked By: <u><b>{{ $transaction->account->name }}</b></u></div>
+        </div>
+        <div>
+            <div>Approved By: <u><b>{{ $deployer->full_name }}</b></u></div>
+        </div>
+    </div>
+</div>
 
 
 

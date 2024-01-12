@@ -182,12 +182,20 @@ class TeamLeaderController extends Controller
 
     public function transactionsReciept(Transaction $transaction)
     {
+        $transaction = Transaction::query()->first();
+
         $totalAmount = 0;
 
         foreach($transaction->items as $transactionItem) {
             $totalAmount += $transactionItem->quantity * $transactionItem->warehouseItem->price;
         }
-        $pdf = Pdf::loadView('pdfs.SalesOrder', ['transaction' => $transaction, 'totalAmount' => $totalAmount]);
+        $emptyCount = 25 - $transaction->items->count();
+        if($emptyCount < 0) {
+            $emptyCount = 0;
+        }
+
+        $deployer = $transaction->user->teams->first()->leaders->first();
+        $pdf = Pdf::loadView('pdfs.SalesOrder', ['transaction' => $transaction, 'totalAmount' => $totalAmount, 'deployer' => $deployer, 'emptyCount' => $emptyCount]);
 
         return $pdf->download();
     }
