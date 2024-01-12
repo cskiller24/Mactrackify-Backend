@@ -7,6 +7,7 @@ use App\Http\Requests\TransactionStoreRequest;
 use App\Models\Account;
 use App\Models\Sale;
 use App\Models\Team;
+use App\Models\Track;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Models\WarehouseItem;
@@ -273,6 +274,13 @@ class TeamLeaderController extends Controller
         abort_if(! $user->isBrandAmbassador(), 404);
 
         return view('team-leader.tracking-show', compact('user'));
+    }
+
+    public function trackingShowId($trackId)
+    {
+        $track = Track::find($trackId);
+
+        return view('team-leader.tracking-show-id', compact('track'));
     }
 
     public function notificationIndex()

@@ -50,7 +50,7 @@
                 </td>
                 <td>
                     @if($spoof = $user->latestSpoofedTrack)
-                    <a href="{{ route('team-leader.tracking.show', ['track_id' => $spoof->id]) }}" title="View last spoofed tracking" >
+                    <a href="{{ route('team-leader.tracking.show.id', $spoof->id) }}" title="View last spoofed tracking" >
                         <i class="ti ti-eye-pin"></i>
                     </a>
                     @endif

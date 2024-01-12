@@ -160,7 +160,7 @@ $(document).ready(function() {
         $('#t-body').html('')
         $('')
         makeAPICall();
-    }, 60000);
+    }, 30000);
 })
 
 </script>

@@ -117,6 +117,7 @@ Route::group([
     Route::post('/data/export', [TeamLeaderController::class, 'dataExport'])->name('data.export');
     Route::get('/tracking', [TeamLeaderController::class, 'trackingIndex'])->name('tracking');
     Route::get('/tracking/{id}', [TeamLeaderController::class, 'trackingShow'])->name('tracking.show');
+    Route::get('/tracking-spoofed/{trackId}', [TeamLeaderController::class, 'trackingShowId'])->name('tracking.show.id');
     Route::get('/notifications', [TeamLeaderController::class, 'notificationIndex'])->name('notifications');
     Route::get('/transactions/create', [TeamLeaderController::class, 'transactionsCreate'])->name('transactions.create');
     Route::post('/transactions', [TeamLeaderController::class, 'transactionsStore'])->name('transactions.store');
