@@ -236,7 +236,7 @@ Route::get('/schedule', function () {
         return redirect('/');
     }
 
-    flash('You are not brand ambassador or team leader to check availability', 'error');
+    flash('You are not deployee or deployer to check availability', 'error');
     return redirect('/');
 })->name('schedule');
 
@@ -256,7 +256,7 @@ Route::get('/pdf', function() {
     $deployer = $transaction->user->teams->first()->leaders->first();
 
     return view('pdfs.SalesOrder', ['transaction' => $transaction, 'totalAmount' => $totalAmount, 'emptyCount' => $emptyCount, 'deployer' => $deployer]);
-});  
+});
 Route::get('/pdf2', function() {
     $transaction = Transaction::query()->first();
 

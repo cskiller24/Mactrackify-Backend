@@ -26,7 +26,7 @@
             <thead>
                 <tr>
                     <th scope="col">#</th>
-                    <th scope="col">Brand Ambassador Name</th>
+                    <th scope="col">Deployee Name</th>
                     <th scope="col">GPS Coordinates</th>
                     <th scope="col">Location</th>
                     <th scope="col">Status</th>

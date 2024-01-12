@@ -28,7 +28,7 @@
 @endphp
 @extends('layouts.brand-ambassador')
 
-@section('title', 'Brand Ambassador')
+@section('title', 'Deployee')
 @section('pre-title', 'Deployee')
 
 @section('content-header')

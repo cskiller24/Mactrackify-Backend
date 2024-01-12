@@ -9,7 +9,7 @@
     @endif
 
     @if ($user->isBrandAmbassador())
-        <span class="badge bg-green">Brand Ambassador</span>
+        <span class="badge bg-green">Deployee</span>
     @endif
 
     @if ($user->isHumanResource())

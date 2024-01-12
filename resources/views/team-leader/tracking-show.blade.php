@@ -26,7 +26,7 @@
             <thead>
                 <tr>
                     <th scope="col">#</th>
-                    <th scope="col">Brand Ambassador Name</th>
+                    <th scope="col">Deployee Name</th>
                     <th scope="col">GPS Coordinates</th>
                     <th scope="col">Location</th>
                     <th scope="col">Status</th>
@@ -45,6 +45,14 @@
                     <td>1 second ago</td>
                 </tr> --}}
             </tbody>
+            @if(request('enable-route'))
+            <button class="" id="map-route">
+                Set Route
+            </button>
+            <button class="" id="map-route-remove">
+                Remove route
+            </button>
+            @endif
         </table>
     </div>
 </div>
@@ -55,6 +63,11 @@
 $(document).ready(function() {
     var map;
     var markers = [];
+    var waypoints = [];
+    var startPoint = null;
+    var endPoint = null;
+    var directionsDisplay;
+    var directionsService;
 
     var apiTracks = '{{ route('api.tracks.show', $user->id) }}'
 
@@ -65,6 +78,10 @@ $(document).ready(function() {
             center: { lat: 14.58977819216876, lng: 120.98159704631904 },
             zoom: 13,
         });
+
+        directionsService = new google.maps.DirectionsService()
+        directionsDisplay = new google.maps.DirectionsRenderer()
+        directionsDisplay.setMap(map)
     }
 
     initMap();
@@ -75,6 +92,7 @@ $(document).ready(function() {
             method: 'GET',
             success: function (data) {
                 removeMarkers()
+                removeRouteMap()
                 if(!data.latest_tracking.length) {
                     var tr = $('<tr>');
                     var td = $('<td colspan="6">');
@@ -97,8 +115,23 @@ $(document).ready(function() {
                             profile_link: data.profile_link,
                         })
                         if(index === 0) {
+                            endPoint = new google.maps.LatLng(row.latitude, row.longitude)
                             addMarker(map, parseFloat(row.latitude), parseFloat(row.longitude), row.location ?? "Null", data.profile_link)
                         }
+
+                        if(index === data.latest_tracking.length - 1) {
+                            startPoint = new google.maps.LatLng(row.latitude, row.longitude)
+                        }
+
+
+                        if(index > 0 && index < data.latest_tracking.length - 1) {
+                            console.log('added')
+                            waypoints.push({
+                                location: new google.maps.LatLng(row.latitude, row.longitude),
+                                stopover: true
+                            })
+                        }
+
                     })
                 }
             }
@@ -136,6 +169,41 @@ $(document).ready(function() {
         }
     }
 
+    function removeRouteMap() {
+        if (directionsDisplay != null) {
+            directionsDisplay.setMap(null);
+            directionsDisplay = null;
+        }
+        waypoints = []
+        startPoint = null;
+        endPoint = null;
+    }
+
+    function addRouteMap() {
+        // console.log(waypoints.length > 0 && startPoint != null && endPoint != null)
+        console.log(waypoints.length > 0)
+        console.log(startPoint != null, startPoint)
+        console.log(endPoint != null)
+        if(waypoints.length > 0 && startPoint != null && endPoint != null) {
+            var request = {
+                origin: startPoint,
+                destination: endPoint,
+                waypoints: waypoints,
+                travelMode: google.maps.DirectionsTravelMode.WALKING
+            }
+            directionsService.route(request, function (response, status) {
+                if(directionsDisplay == null) {
+                    directionsDisplay = new google.maps.DirectionsRenderer()
+                    directionsDisplay.setMap(map)
+                }
+                if (status == google.maps.DirectionsStatus.OK) {
+
+                    directionsDisplay.setDirections(response)
+                }
+            })
+        }
+    }
+
 
     function renderTableRow(data) {
         const newRow = $('<tr>');
@@ -155,6 +223,13 @@ $(document).ready(function() {
     }
 
     makeAPICall()
+    $('#map-route').click(function () {
+        addRouteMap()
+    })
+
+    $('#map-route-remove').click(function () {
+        removeRouteMap()
+    })
 
     setInterval(function() {
         $('#t-body').html('')
