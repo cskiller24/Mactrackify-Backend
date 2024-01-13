@@ -25,7 +25,7 @@
         </button>
         <h1 class="navbar-brand navbar-brand-autodark">
             <a href="" class="h2">
-                Trackcertify
+                Trackify
             </a>
         </h1>
         <div class="hr-text my-0 text-white">ROLE: HUMAN RESOURCE</div>

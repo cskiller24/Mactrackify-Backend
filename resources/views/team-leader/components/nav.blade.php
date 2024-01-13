@@ -30,7 +30,7 @@
         </button>
         <h1 class="navbar-brand navbar-brand-autodark">
             <a href="" class="h2">
-                {{ env('APP_NAME') }}
+                Trackify
             </a>
         </h1>
         <div class="hr-text my-0 text-white">ROLE: DEPLOYER</div>

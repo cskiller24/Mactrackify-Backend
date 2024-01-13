@@ -30,7 +30,7 @@ $dashboard = [
         </button>
         <h1 class="navbar-brand navbar-brand-autodark">
             <a href="{{ route('brand-ambassador.index') }}" class="h2">
-                TrackCertify
+                Trackify
             </a>
         </h1>
         <div class="hr-text my-0 text-white">ROLE: DEPLOYEE</div>
