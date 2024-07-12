@@ -9,7 +9,7 @@
         "@popperjs/core": "^2.11.8",
         "axios": "^1.1.2",
         "laravel-vite-plugin": "^0.8.0",
-        "vite": "^4.0.0"
+        "vite": "^4.5.3"
     },
     "dependencies": {
         "@fawmi/vue-google-maps": "^0.9.79",
